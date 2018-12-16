@@ -5,7 +5,7 @@ namespace DiscordBotGuardian
     /// <summary>
     /// Used for storing the data retrived out of the Google Doc
     /// </summary>
-    internal class UserData
+    public class UserData
     {
         /// <summary>
         /// Setting the Team that the user is on
