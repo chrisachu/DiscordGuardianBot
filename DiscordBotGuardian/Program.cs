@@ -17,7 +17,6 @@ using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
-using System.Reflection;
 
 namespace DiscordBotGuardian
 {
@@ -141,59 +140,6 @@ namespace DiscordBotGuardian
             return Task.CompletedTask;
         }
 
-        private bool Isphonenumber(string message)
-        {
-            foreach (char c in message)
-            {
-                if (c < '0' || c > '9')
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private bool Isvalidcarrier(string message)
-        {
-            foreach (SMS carrier in providers)
-            {
-                if (message.ToLower() == carrier.Carrier.ToLower())
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private bool Isvalidregion(string message)
-        {
-            try
-            {
-                if (message.Length <= 3)
-                {
-                    RegionInfo region = new RegionInfo(message);
-                    foreach (SMS carrier in providers)
-                    {
-                        if (region.EnglishName == carrier.Country)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            catch
-            {
-            }
-            foreach (SMS carrier in providers)
-            {
-                if (message.ToLower() == carrier.Country.ToLower())
-                {
-                    return true;
-                }
-
-            }
-            return false;
-        }
 
         private static void ReadDB()
         {
@@ -501,7 +447,7 @@ namespace DiscordBotGuardian
                                                                    ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
                                                                    : new string[] { element })  // Keep the entire item
                                              .SelectMany(element => element).ToList();
-                        if (parsedmessage.Count == 4 && Isphonenumber(parsedmessage[1]) && Isvalidregion(parsedmessage[2]) && Isvalidcarrier(parsedmessage[3]))
+                        if (parsedmessage.Count == 4 && Validation.Isphonenumber(parsedmessage[1]) && Validation.Isvalidregion(parsedmessage[2], providers) && Validation.Isvalidcarrier(parsedmessage[3], providers))
                         {
                             string country = "";
                             //Need to add logic for adding user to DB of where they should be getting messages
@@ -547,15 +493,15 @@ namespace DiscordBotGuardian
                         {
                             await message.Channel.SendMessageAsync("Non Complete Command.");
                         }
-                        else if (Isphonenumber(parsedmessage[1]) == false)
+                        else if (Validation.Isphonenumber(parsedmessage[1]) == false)
                         {
                             await message.Channel.SendMessageAsync("Invalid Phone Number. Please enter only numbers.");
                         }
-                        else if (Isvalidregion(parsedmessage[2]) == false)
+                        else if (Validation.Isvalidregion(parsedmessage[2], providers) == false)
                         {
                             await message.Channel.SendMessageAsync("Invalid Country/Country Code");
                         }
-                        else if (Isvalidcarrier(parsedmessage[3]) == false && Isvalidregion(parsedmessage[2]) == true)
+                        else if (Validation.Isvalidcarrier(parsedmessage[3], providers) == false && Validation.Isvalidregion(parsedmessage[2], providers) == true)
                         {
                             string country = "";
                             if (parsedmessage[2].Length <= 3)

@@ -67,6 +67,10 @@ namespace DiscordBotGuardian
             }
             // Add the event we are adding
             GuardianEvents.Add("Guardian-" + Event + "-" + Year);
+            // Add default roles
+            GuardianEvents.Add("Head-Guardian");
+            GuardianEvents.Add("Staff");
+            GuardianEvents.Add("Admin");
 
             /// Create Categories before we make channels
             /// 
@@ -109,29 +113,29 @@ namespace DiscordBotGuardian
             // ToDo: Create landing, requires explicit rule changes for the channel
 
             // Global Category Channels
-            await CreateChannel(Context, "guardian-lounge", null, "Our Patron Saint, Dame Angela Lansbury", "Global", 1);
-            await CreateChannel(Context, "movies-shows", null, "Talking about movies, tv shows, and rabb.it", "Global", 2);
-            await CreateChannel(Context, "music", null, "What's on your playlist?", "Global", 3);
-            await CreateChannel(Context, "games", null, "Party up.", "Global", 4);
-            await CreateChannel(Context, "pic-dump", null, "Cute things and memes go here.", "Global", 5);
-            await CreateChannel(Context, "self-promotion", null, "Share your beautiful things for all to see!", "Global", 6);
-            await CreateVoiceChannel(Context, "global-vc-1", null, "Global", 7);
-            await CreateVoiceChannel(Context, "global-vc-2", null, "Global", 8);
+            await CreateChannel(Context, "guardian-lounge", null, "Our Patron Saint, Dame Angela Lansbury", "Global", 1, true);
+            await CreateChannel(Context, "movies-shows", null, "Talking about movies, tv shows, and rabb.it", "Global", 2, true);
+            await CreateChannel(Context, "music", null, "What's on your playlist?", "Global", 3, true);
+            await CreateChannel(Context, "games", null, "Party up.", "Global", 4, true);
+            await CreateChannel(Context, "pic-dump", null, "Cute things and memes go here.", "Global", 5, true);
+            await CreateChannel(Context, "self-promotion", null, "Share your beautiful things for all to see!", "Global", 6, true);
+            await CreateVoiceChannel(Context, "global-vc-1", null, "Global", 7, true);
+            await CreateVoiceChannel(Context, "global-vc-2", null, "Global", 8, true);
 
             // Event Category Channels
             // Command Center
-            await CreateChannel(Context, "command-chat-" + Event + "-" + Year, new List<string> { "Admin", "Head-Guardian", "Team-Lead-" + Event + "-" + Year }, "HGs and TLs", "Command-Center-" + Event + "-" + Year, 1);
-            await CreateChannel(Context, "crisis-center-" + Event + "-" + Year, new List<string> { "Admin", "Head-Guardian", "Crisis-Management-" + Event + "-" + Year }, "Direct line: HGs and Response TLs.", "Command-Center-" + Event + "-" + Year, 2);
+            await CreateChannel(Context, "command-chat-" + Event + "-" + Year, new List<string> { "Admin", "Head-Guardian", "Team-Lead-" + Event + "-" + Year }, "HGs and TLs", "Command-Center-" + Event + "-" + Year, 1, true);
+            await CreateChannel(Context, "crisis-center-" + Event + "-" + Year, new List<string> { "Admin", "Head-Guardian", "Crisis-Management-" + Event + "-" + Year }, "Direct line: HGs and Response TLs.", "Command-Center-" + Event + "-" + Year, 2, true);
             // ToDo: Create Announcements with explicit settings
             // ToDo: Create Links with explicit settings
 
             // Commons
-            await CreateChannel(Context, "guardian-bar-" + Event + "-" + Year, null, "There will always be a Guardian Bar", Event + "-Commons-" + Year, 1);
-            await CreateChannel(Context, "ride-room-share-" + Event + "-" + Year, null, "Because no one uses the forum anymore.", Event + "-Commons-" + Year, 2);
-            await CreateChannel(Context, "meetups-events-" + Event + "-" + Year, null, "It's like matchmaking, but in real life.", Event + "-Commons-" + Year, 3);
-            await CreateChannel(Context, "town-hall-" + Event + "-" + Year, null, "Ask the HGs anything appropriate.", Event + "-Commons-" + Year, 4);
-            await CreateVoiceChannel(Context, Event + "-vc-1", null, Event + "-Commons-" + Year, 5);
-            await CreateVoiceChannel(Context, Event + "-vc-2", null, Event + "-Commons-" + Year, 6);
+            await CreateChannel(Context, "guardian-bar-" + Event + "-" + Year, null, "There will always be a Guardian Bar", Event + "-Commons-" + Year, 1, true);
+            await CreateChannel(Context, "ride-room-share-" + Event + "-" + Year, null, "Because no one uses the forum anymore.", Event + "-Commons-" + Year, 2, true);
+            await CreateChannel(Context, "meetups-events-" + Event + "-" + Year, null, "It's like matchmaking, but in real life.", Event + "-Commons-" + Year, 3, true);
+            await CreateChannel(Context, "town-hall-" + Event + "-" + Year, null, "Ask the HGs anything appropriate.", Event + "-Commons-" + Year, 4, true);
+            await CreateVoiceChannel(Context, Event + "-vc-1", null, Event + "-Commons-" + Year, 5, true);
+            await CreateVoiceChannel(Context, Event + "-vc-2", null, Event + "-Commons-" + Year, 6, true);
             // ToDo: Add in Town Hall VC Requires explicit deny
 
             // Team Chats
@@ -171,7 +175,7 @@ namespace DiscordBotGuardian
                     foreach (Discord.IRole existingrole in Context.Guild.Roles)
                     {
                         // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name == role)
+                        if (existingrole.Name.ToLower().Trim() == role.ToLower().Trim())
                         {
                             // Add the selected roles to the channel using inhert as its base
                             OverwritePermissions inheret = new OverwritePermissions();
@@ -180,7 +184,6 @@ namespace DiscordBotGuardian
                         }
                     }
                 }
-                // ToDo: Determine if removing the everyone permission is possible
                 // Remove the everyone permission if it's not in the list
                 if (Roles.Contains("Everyone") == false)
                 {
@@ -189,35 +192,9 @@ namespace DiscordBotGuardian
                         // Compare the list of roles in the discord with the Role
                         if (existingrole.Name.ToLower() == "@everyone")
                         {
+                            OverwritePermissions denypermissions = new OverwritePermissions(createInstantInvite: PermValue.Deny, manageChannel: PermValue.Deny, addReactions: PermValue.Deny, viewChannel: PermValue.Deny, sendMessages: PermValue.Deny, sendTTSMessages: PermValue.Deny, manageMessages: PermValue.Deny, embedLinks: PermValue.Deny, attachFiles: PermValue.Deny, readMessageHistory: PermValue.Deny, mentionEveryone: PermValue.Deny, useExternalEmojis: PermValue.Deny, connect: PermValue.Deny, speak: PermValue.Deny, muteMembers: PermValue.Deny, deafenMembers: PermValue.Deny, moveMembers: PermValue.Deny, useVoiceActivation: PermValue.Deny, manageRoles: PermValue.Deny, manageWebhooks: PermValue.Deny);
                             // Remove Everyones permissions
-                            List<OverwritePermissions> Permissions = new List<OverwritePermissions>
-                            {
-                                new OverwritePermissions(createInstantInvite: PermValue.Deny),
-                                new OverwritePermissions(manageChannel: PermValue.Deny),
-                                new OverwritePermissions(addReactions: PermValue.Deny),
-                                new OverwritePermissions(sendMessages: PermValue.Deny),
-                                new OverwritePermissions(sendTTSMessages: PermValue.Deny),
-                                new OverwritePermissions(manageMessages: PermValue.Deny),
-                                new OverwritePermissions(embedLinks: PermValue.Deny),
-                                new OverwritePermissions(attachFiles: PermValue.Deny),
-                                new OverwritePermissions(readMessageHistory: PermValue.Deny),
-                                new OverwritePermissions(mentionEveryone: PermValue.Deny),
-                                new OverwritePermissions(useExternalEmojis: PermValue.Deny),
-                                new OverwritePermissions(connect: PermValue.Deny),
-                                new OverwritePermissions(speak: PermValue.Deny),
-                                new OverwritePermissions(muteMembers: PermValue.Deny),
-                                new OverwritePermissions(deafenMembers: PermValue.Deny),
-                                new OverwritePermissions(moveMembers: PermValue.Deny),
-                                new OverwritePermissions(useVoiceActivation: PermValue.Deny),
-                                new OverwritePermissions(manageWebhooks: PermValue.Deny),
-                                new OverwritePermissions(manageRoles: PermValue.Deny)
-                            };
-
-                            foreach (OverwritePermissions perm in Permissions)
-                            {
-                                await newcategory.AddPermissionOverwriteAsync(existingrole, perm);
-                                System.Threading.Thread.Sleep(100);
-                            }
+                            await newcategory.AddPermissionOverwriteAsync(existingrole, denypermissions);
                             break;
                         }
                     }
@@ -237,7 +214,7 @@ namespace DiscordBotGuardian
         /// <summary>
         /// Create a Voice Channel using the name and roles provided
         /// </summary>
-        private async Task CreateVoiceChannel(CommandContext Context, string VoChannel, [Optional]List<string> Roles, [Optional]string Category, [Optional]int? Position)
+        private async Task CreateVoiceChannel(CommandContext Context, string VoChannel, [Optional]List<string> Roles, [Optional]string Category, [Optional]int? Position, [Optional]bool sync)
         {
             // Get the list of channels
             IReadOnlyCollection<IGuildChannel> channels = await Context.Guild.GetVoiceChannelsAsync();
@@ -266,7 +243,7 @@ namespace DiscordBotGuardian
                     foreach (Discord.IRole existingrole in Context.Guild.Roles)
                     {
                         // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name == role)
+                        if (existingrole.Name.ToLower().Trim() == role.ToLower().Trim())
                         {
                             // Add the selected roles to the channel using inhert as its base
                             // ToDo: Allow for read only
@@ -286,7 +263,7 @@ namespace DiscordBotGuardian
                 // Check if the category name matches the id if it does return the ID
                 foreach (var categoryname in categories)
                 {
-                    if (categoryname.Name == Category)
+                    if (categoryname.Name.ToLower().Trim() == Category.ToLower().Trim())
                     {
                         categoryId = categoryname.Id;
                         break;
@@ -308,13 +285,16 @@ namespace DiscordBotGuardian
                     x.Position = Position.Value;
                 });
             }
-            await newchannel.SyncPermissionsAsync();
+            if (sync == true)
+            {
+                await newchannel.SyncPermissionsAsync();
+            }
         }
 
         /// <summary>
         /// Create a Text Channel using the name and roles provided
         /// </summary>
-        private async Task CreateChannel(CommandContext Context, string Channel, [Optional]List<string> Roles, [Optional]string Description, [Optional]string Category, [Optional]int? Position)
+        private async Task CreateChannel(CommandContext Context, string Channel, [Optional]List<string> Roles, [Optional]string Description, [Optional]string Category, [Optional]int? Position, [Optional]bool sync)
         {
             // Get the list of channels
             IReadOnlyCollection<IGuildChannel> channels = await Context.Guild.GetChannelsAsync();
@@ -343,7 +323,7 @@ namespace DiscordBotGuardian
                     foreach (Discord.IRole existingrole in Context.Guild.Roles)
                     {
                         // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name == role)
+                        if (existingrole.Name.ToLower().Trim() == role.ToLower().Trim())
                         {
                             // Add the selected roles to the channel using inhert as its base
                             // ToDo: Allow for read only
@@ -372,7 +352,7 @@ namespace DiscordBotGuardian
                 // Check if the category name matches the id if it does return the ID
                 foreach (var categoryname in categories)
                 {
-                    if (categoryname.Name == Category)
+                    if (categoryname.Name.ToLower().Trim() == Category.ToLower().Trim())
                     {
                         categoryId = categoryname.Id;
                         break;
@@ -394,7 +374,10 @@ namespace DiscordBotGuardian
                     x.Position = Position.Value;
                 });
             }
-            await newchannel.SyncPermissionsAsync();
+            if (sync == true)
+            {
+                await newchannel.SyncPermissionsAsync();
+            }
         }
 
         /// <summary>
@@ -408,7 +391,7 @@ namespace DiscordBotGuardian
             foreach (Discord.IRole existingrole in Context.Guild.Roles)
             {
                 // Compare the list of roles in the discord with the Role
-                if (existingrole.Name == Role)
+                if (existingrole.Name.ToLower().Trim() == Role.ToLower().Trim())
                 {
                     return;
                 }
@@ -424,16 +407,16 @@ namespace DiscordBotGuardian
 
             GuildPermissions roleperms;
             // Check what flag was passed because C# dosen't have a dynamic way to only give a specific list of options
-            if (Perms.ToLower() == "admin")
+            if (Perms.ToLower().Trim() == "admin")
             {
                 // Create the Role using the passed flags
                 roleperms = adminpermissions;
             }
-            else if (Perms.ToLower() == "mod")
+            else if (Perms.ToLower().Trim() == "mod")
             {
                 roleperms = modpermissions;
             }
-            else if (Perms.ToLower() == "standard")
+            else if (Perms.ToLower().Trim() == "standard")
             {
                 roleperms = standardpermissions;
             }

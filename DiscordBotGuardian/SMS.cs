@@ -5,7 +5,7 @@ namespace DiscordBotGuardian
     /// <summary>
     /// Used for loading in sms.json https://email2sms.info/
     /// </summary>
-    internal class SMS
+    public class SMS
     {
         /// <summary>
         /// Used for loading in the Country
