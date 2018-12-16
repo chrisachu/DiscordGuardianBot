@@ -26,7 +26,6 @@ namespace DiscordBotGuardian
     /// </summary>
     class Program
     {
-        private CommandService commands;
         private DiscordSocketClient _client;
         private static string curDir = Directory.GetCurrentDirectory();
         private static string json = File.ReadAllText(curDir + "/sms.json");
@@ -92,11 +91,9 @@ namespace DiscordBotGuardian
             ReadDB();
 
             _client = new DiscordSocketClient();
-            commands = new CommandService();
             _client.Log += LogAsync;
             _client.Ready += ReadyAsync;
             _client.MessageReceived += MessageReceivedAsync;
-            await commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
             // Tokens should be considered secret data, and never hard-coded.
             await _client.LoginAsync(TokenType.Bot, creds.BotToken);
@@ -724,6 +721,16 @@ namespace DiscordBotGuardian
                         {
                             await message.Channel.SendMessageAsync("The commands available are, " + Environment.NewLine + "!sms - To enable or disable SMS for your device (You will have to register your phone if you have not yet)" + Environment.NewLine + "!notify - Type it in the channel you want to receive SMS notifications for" + Environment.NewLine + "!registerphone 1234567890 \"United States\" \"Verizon Wireless\" - Use this command to register your phone as a device to get texts on. (Number, Country, Carrier)");
                         }
+                    }
+                    else if (splitmessage[0].ToLower() == "!testevent")
+                    {
+                        NewYear test = new NewYear();
+                        new Thread(async () =>
+                        {
+                            Thread.CurrentThread.IsBackground = true;
+                            /* run your code here */
+                            await test.CreateNewYearAsync(context, "Austin", 19);
+                        }).Start();
                     }
                     else
                     {

@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace Discord
 {
@@ -80,7 +80,7 @@ namespace Discord
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool HasFlag(ulong value, ulong flag) => (value & flag) != 0;
+        private static bool HasFlag(ulong value, ulong flag) => (value & flag) == flag;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetFlag(ref ulong value, ulong flag) => value |= flag;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -119,13 +119,11 @@ namespace Discord
                 resolvedPermissions = mask; //Owners and administrators always have all permissions
             else
             {
-                OverwritePermissions? perms;
-
                 //Start with this user's guild permissions
                 resolvedPermissions = guildPermissions;
 
                 //Give/Take Everyone permissions
-                perms = channel.GetPermissionOverwrite(guild.EveryoneRole);
+                var perms = channel.GetPermissionOverwrite(guild.EveryoneRole);
                 if (perms != null)
                     resolvedPermissions = (resolvedPermissions & ~perms.Value.DenyValue) | perms.Value.AllowValue;
 
@@ -133,7 +131,7 @@ namespace Discord
                 ulong deniedPermissions = 0UL, allowedPermissions = 0UL;
                 foreach (var roleId in user.RoleIds)
                 {
-                    IRole role = null;
+                    IRole role;
                     if (roleId != guild.EveryoneRole.Id && (role = guild.GetRole(roleId)) != null)
                     {
                         perms = channel.GetPermissionOverwrite(role);
@@ -151,7 +149,7 @@ namespace Discord
                 if (perms != null)
                     resolvedPermissions = (resolvedPermissions  & ~perms.Value.DenyValue) | perms.Value.AllowValue;
 
-                if (channel is ITextChannel textChannel)
+                if (channel is ITextChannel)
                 {
                     if (!GetValue(resolvedPermissions, ChannelPermission.ViewChannel))
                     {
@@ -161,13 +159,13 @@ namespace Discord
                     else if (!GetValue(resolvedPermissions, ChannelPermission.SendMessages))
                     {
                         //No send permissions on a text channel removes all send-related permissions
-                        resolvedPermissions &= ~(1UL << (int)ChannelPermission.SendTTSMessages);
-                        resolvedPermissions &= ~(1UL << (int)ChannelPermission.MentionEveryone);
-                        resolvedPermissions &= ~(1UL << (int)ChannelPermission.EmbedLinks);
-                        resolvedPermissions &= ~(1UL << (int)ChannelPermission.AttachFiles);
+                        resolvedPermissions &= ~(ulong)ChannelPermission.SendTTSMessages;
+                        resolvedPermissions &= ~(ulong)ChannelPermission.MentionEveryone;
+                        resolvedPermissions &= ~(ulong)ChannelPermission.EmbedLinks;
+                        resolvedPermissions &= ~(ulong)ChannelPermission.AttachFiles;
                     }
                 }
-                resolvedPermissions &= mask; //Ensure we didnt get any permissions this channel doesnt support (from guildPerms, for example)
+                resolvedPermissions &= mask; //Ensure we didn't get any permissions this channel doesn't support (from guildPerms, for example)
             }
 
             return resolvedPermissions;

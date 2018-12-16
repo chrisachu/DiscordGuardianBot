@@ -25,27 +25,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Interactive.Async" Version="3.1.1" />
     <Reference Include="Discord.Net.Commands">
-      <HintPath>modules\Discord.Net.Commands\bin\Debug\netstandard1.1\Discord.Net.Commands.dll</HintPath>
+      <HintPath>modules\Discord.Net.Commands\bin\Debug\net46\Discord.Net.Commands.dll</HintPath>
     </Reference>
     <Reference Include="Discord.Net.Core">
-      <HintPath>modules\Discord.Net.Core\bin\Debug\net45\Discord.Net.Core.dll</HintPath>
+      <HintPath>modules\Discord.Net.Core\bin\Debug\net46\Discord.Net.Core.dll</HintPath>
     </Reference>
     <Reference Include="Discord.Net.Rest">
-      <HintPath>modules\Discord.Net.WebSocket\bin\Debug\net45\Discord.Net.Rest.dll</HintPath>
+      <HintPath>modules\Discord.Net.WebSocket\bin\Debug\net46\Discord.Net.Rest.dll</HintPath>
     </Reference>
     <Reference Include="Discord.Net.WebSocket">
-      <HintPath>modules\Discord.Net.WebSocket\bin\Debug\net45\Discord.Net.WebSocket.dll</HintPath>
+      <HintPath>modules\Discord.Net.WebSocket\bin\Debug\net46\Discord.Net.WebSocket.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>modules\Discord.Net.WebSocket\bin\Debug\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable">
-      <HintPath>modules\Discord.Net.WebSocket\bin\Debug\net45\System.Collections.Immutable.dll</HintPath>
+      <HintPath>modules\Discord.Net.WebSocket\bin\Debug\net46\System.Collections.Immutable.dll</HintPath>
     </Reference>
-    <Reference Include="System.Interactive.Async">
-      <HintPath>modules\Discord.Net.WebSocket\bin\Debug\net45\System.Interactive.Async.dll</HintPath>
-    </Reference>
+	
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties sms_1json__JSONSchema="http://json.schemastore.org/apple-app-site-association" /></VisualStudio></ProjectExtensions>

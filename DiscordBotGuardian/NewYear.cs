@@ -11,10 +11,8 @@ namespace DiscordBotGuardian
         /// <summary>
         /// Used for generating a new set of roles and channels for a new year
         /// </summary>
-        public async Task CreateNewYearAsync(CommandContext Context, string Event, string Year)
+        public async Task CreateNewYearAsync(CommandContext Context, string Event, int Year)
         {
-            // If the variables are empty return
-            if (Event == string.Empty || Year == string.Empty) { return; }
 
             /// Create Roles
             /// 
@@ -51,6 +49,9 @@ namespace DiscordBotGuardian
 
             // Actual Event Role
             await CreateRole(Context, "Guardian-" + Event + "-" + Year, "Standard", Color.Green, true);
+
+            // Wait for Roles to Generate
+            System.Threading.Thread.Sleep(5000);
 
             /// Generate list of event roles currently existing for global use
             /// 
@@ -92,7 +93,10 @@ namespace DiscordBotGuardian
             await CreateCategory(Context, "Store-" + Event + "-" + Year, new List<string> { "Store-" + Event + "-" + Year });
             await CreateCategory(Context, "Tech-" + Event + "-" + Year, new List<string> { "Tech-" + Event + "-" + Year });
             await CreateCategory(Context, "Happy-Hour-" + Event + "-" + Year, new List<string> { "Happy-Hour-" + Event + "-" + Year });
-            //ToDo: Voice Lines?
+
+            // Wait for Categories to generate
+            System.Threading.Thread.Sleep(5000);
+
 
             /// Create Channels
             /// 
@@ -105,7 +109,6 @@ namespace DiscordBotGuardian
             // ToDo: Create landing, requires explicit rule changes for the channel
 
             // Global Category Channels
-            // ToDo: Test if passing null is allowing for inherit
             await CreateChannel(Context, "guardian-lounge", null, "Our Patron Saint, Dame Angela Lansbury", "Global", 1);
             await CreateChannel(Context, "movies-shows", null, "Talking about movies, tv shows, and rabb.it", "Global", 2);
             await CreateChannel(Context, "music", null, "What's on your playlist?", "Global", 3);
@@ -145,15 +148,17 @@ namespace DiscordBotGuardian
             // Check if the channel exists
             foreach (var categoryname in categories)
             {
-                if (categoryname.Name == Category)
+                if (categoryname.Name.ToString().ToLower().Trim() == Category.ToString().ToLower().Trim())
                 {
                     // If the channel exists exit
                     return;
                 }
             }
-
             // Create the Category
             var newcategory = await Context.Guild.CreateCategoryAsync(Category);
+
+            // Wait for Category to Generate
+            System.Threading.Thread.Sleep(500);
 
             // Check if we are passing roles
             if (Roles != null)
@@ -175,16 +180,44 @@ namespace DiscordBotGuardian
                         }
                     }
                 }
+                // ToDo: Determine if removing the everyone permission is possible
                 // Remove the everyone permission if it's not in the list
                 if (Roles.Contains("Everyone") == false)
                 {
                     foreach (Discord.IRole existingrole in Context.Guild.Roles)
                     {
                         // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name.ToLower() == "everyone")
+                        if (existingrole.Name.ToLower() == "@everyone")
                         {
                             // Remove Everyones permissions
-                            await newcategory.RemovePermissionOverwriteAsync(existingrole);
+                            List<OverwritePermissions> Permissions = new List<OverwritePermissions>
+                            {
+                                new OverwritePermissions(createInstantInvite: PermValue.Deny),
+                                new OverwritePermissions(manageChannel: PermValue.Deny),
+                                new OverwritePermissions(addReactions: PermValue.Deny),
+                                new OverwritePermissions(sendMessages: PermValue.Deny),
+                                new OverwritePermissions(sendTTSMessages: PermValue.Deny),
+                                new OverwritePermissions(manageMessages: PermValue.Deny),
+                                new OverwritePermissions(embedLinks: PermValue.Deny),
+                                new OverwritePermissions(attachFiles: PermValue.Deny),
+                                new OverwritePermissions(readMessageHistory: PermValue.Deny),
+                                new OverwritePermissions(mentionEveryone: PermValue.Deny),
+                                new OverwritePermissions(useExternalEmojis: PermValue.Deny),
+                                new OverwritePermissions(connect: PermValue.Deny),
+                                new OverwritePermissions(speak: PermValue.Deny),
+                                new OverwritePermissions(muteMembers: PermValue.Deny),
+                                new OverwritePermissions(deafenMembers: PermValue.Deny),
+                                new OverwritePermissions(moveMembers: PermValue.Deny),
+                                new OverwritePermissions(useVoiceActivation: PermValue.Deny),
+                                new OverwritePermissions(manageWebhooks: PermValue.Deny),
+                                new OverwritePermissions(manageRoles: PermValue.Deny)
+                            };
+
+                            foreach (OverwritePermissions perm in Permissions)
+                            {
+                                await newcategory.AddPermissionOverwriteAsync(existingrole, perm);
+                                System.Threading.Thread.Sleep(100);
+                            }
                             break;
                         }
                     }
@@ -211,13 +244,17 @@ namespace DiscordBotGuardian
             // Check if the channel exists
             foreach (var channelname in channels)
             {
-                if (channelname.Name == VoChannel)
+                if (channelname.Name.ToString().ToLower().Trim() == VoChannel.ToString().ToLower().Trim())
                 {
                     // If the channel exists exit
                     return;
                 }
             }
             Discord.IVoiceChannel newchannel = await Context.Guild.CreateVoiceChannelAsync(VoChannel);
+
+            // Wait for VO to Generate
+            System.Threading.Thread.Sleep(500);
+
             // Check if roles were passed
             if (Roles != null)
             {
@@ -235,21 +272,6 @@ namespace DiscordBotGuardian
                             // ToDo: Allow for read only
                             OverwritePermissions inheret = new OverwritePermissions();
                             await newchannel.AddPermissionOverwriteAsync(existingrole, inheret);
-                            break;
-                        }
-                    }
-                }
-                // ToDo: Determine if removing the everyone permission is possible
-                // Remove the everyone permission if it's not in the list
-                if (Roles.Contains("Everyone") == false)
-                {
-                    foreach (Discord.IRole existingrole in Context.Guild.Roles)
-                    {
-                        // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name.ToLower() == "everyone")
-                        {
-                            // Remove Everyones permissions
-                            await newchannel.RemovePermissionOverwriteAsync(existingrole);
                             break;
                         }
                     }
@@ -286,6 +308,7 @@ namespace DiscordBotGuardian
                     x.Position = Position.Value;
                 });
             }
+            await newchannel.SyncPermissionsAsync();
         }
 
         /// <summary>
@@ -298,13 +321,17 @@ namespace DiscordBotGuardian
             // Check if the channel exists
             foreach (var channelname in channels)
             {
-                if (channelname.Name == Channel)
+                if (channelname.Name.ToString().ToLower().Trim() == Channel.ToString().ToLower().Trim())
                 {
                     // If the channel exists exit
                     return;
                 }
             }
             Discord.ITextChannel newchannel = await Context.Guild.CreateTextChannelAsync(Channel);
+
+            // Wait for Channel to Generate
+            System.Threading.Thread.Sleep(500);
+
             // Check if roles were passed
             if (Roles != null)
             {
@@ -322,20 +349,6 @@ namespace DiscordBotGuardian
                             // ToDo: Allow for read only
                             OverwritePermissions inheret = new OverwritePermissions();
                             await newchannel.AddPermissionOverwriteAsync(existingrole, inheret);
-                            break;
-                        }
-                    }
-                }
-                // Remove the everyone permission if it's not in the list
-                if (Roles.Contains("Everyone") == false)
-                {
-                    foreach (Discord.IRole existingrole in Context.Guild.Roles)
-                    {
-                        // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name.ToLower() == "everyone")
-                        {
-                            // Remove Everyones permissions
-                            await newchannel.RemovePermissionOverwriteAsync(existingrole);
                             break;
                         }
                     }
@@ -381,6 +394,7 @@ namespace DiscordBotGuardian
                     x.Position = Position.Value;
                 });
             }
+            await newchannel.SyncPermissionsAsync();
         }
 
         /// <summary>
@@ -403,10 +417,10 @@ namespace DiscordBotGuardian
             // ToDo: Set users Nickname as their site name and remove the users ability to change their nickname
 
             // Set up the base permissions flags for creating a new role rather than manually generating it each time
-            GuildPermissions adminpermissions = new GuildPermissions(createInstantInvite: true, kickMembers: true, banMembers: true, administrator: true, manageChannels: true, manageGuild: true, addReactions: true, viewAuditLog: true, readMessages: true, sendMessages: true, sendTTSMessages: true, manageMessages: true, embedLinks: true, attachFiles: true, readMessageHistory: true, mentionEveryone: true, useExternalEmojis: true, connect: true, speak: true, muteMembers: true, deafenMembers: true, moveMembers: true, useVoiceActivation: true, changeNickname: true, manageNicknames: true, manageRoles: true, manageWebhooks: true, manageEmojis: true);
-            GuildPermissions modpermissions = new GuildPermissions(createInstantInvite: false, kickMembers: false, banMembers: false, administrator: false, manageChannels: false, manageGuild: false, addReactions: true, viewAuditLog: false, readMessages: true, sendMessages: true, sendTTSMessages: false, manageMessages: true, embedLinks: true, attachFiles: true, readMessageHistory: true, mentionEveryone: false, useExternalEmojis: true, connect: true, speak: true, muteMembers: true, deafenMembers: true, moveMembers: false, useVoiceActivation: true, changeNickname: true, manageNicknames: true, manageRoles: false, manageWebhooks: false, manageEmojis: false);
-            GuildPermissions standardpermissions = new GuildPermissions(createInstantInvite: false, kickMembers: false, banMembers: false, administrator: false, manageChannels: false, manageGuild: false, addReactions: true, viewAuditLog: false, readMessages: true, sendMessages: true, sendTTSMessages: false, manageMessages: false, embedLinks: true, attachFiles: true, readMessageHistory: true, mentionEveryone: false, useExternalEmojis: true, connect: true, speak: true, muteMembers: false, deafenMembers: false, moveMembers: false, useVoiceActivation: true, changeNickname: true, manageNicknames: false, manageRoles: false, manageWebhooks: false, manageEmojis: false);
-            GuildPermissions displayonlypermissions = new GuildPermissions(createInstantInvite: false, kickMembers: false, banMembers: false, administrator: false, manageChannels: false, manageGuild: false, addReactions: false, viewAuditLog: false, readMessages: false, sendMessages: false, sendTTSMessages: false, manageMessages: false, embedLinks: false, attachFiles: false, readMessageHistory: false, mentionEveryone: false, useExternalEmojis: false, connect: false, speak: false, muteMembers: false, deafenMembers: false, moveMembers: false, useVoiceActivation: false, changeNickname: false, manageNicknames: false, manageRoles: false, manageWebhooks: false, manageEmojis: false);
+            GuildPermissions adminpermissions = new GuildPermissions(createInstantInvite: true, kickMembers: true, banMembers: true, administrator: true, manageChannels: true, manageGuild: true, addReactions: true, viewAuditLog: true, sendMessages: true, sendTTSMessages: true, manageMessages: true, embedLinks: true, attachFiles: true, readMessageHistory: true, mentionEveryone: true, useExternalEmojis: true, connect: true, speak: true, muteMembers: true, deafenMembers: true, moveMembers: true, useVoiceActivation: true, changeNickname: true, manageNicknames: true, manageRoles: true, manageWebhooks: true, manageEmojis: true);
+            GuildPermissions modpermissions = new GuildPermissions(createInstantInvite: false, kickMembers: false, banMembers: false, administrator: false, manageChannels: false, manageGuild: false, addReactions: true, viewAuditLog: false, sendMessages: true, sendTTSMessages: false, manageMessages: true, embedLinks: true, attachFiles: true, readMessageHistory: true, mentionEveryone: false, useExternalEmojis: true, connect: true, speak: true, muteMembers: true, deafenMembers: true, moveMembers: false, useVoiceActivation: true, changeNickname: true, manageNicknames: true, manageRoles: false, manageWebhooks: false, manageEmojis: false);
+            GuildPermissions standardpermissions = new GuildPermissions(createInstantInvite: false, kickMembers: false, banMembers: false, administrator: false, manageChannels: false, manageGuild: false, addReactions: true, viewAuditLog: false, sendMessages: true, sendTTSMessages: false, manageMessages: false, embedLinks: true, attachFiles: true, readMessageHistory: true, mentionEveryone: false, useExternalEmojis: true, connect: true, speak: true, muteMembers: false, deafenMembers: false, moveMembers: false, useVoiceActivation: true, changeNickname: true, manageNicknames: false, manageRoles: false, manageWebhooks: false, manageEmojis: false);
+            GuildPermissions displayonlypermissions = new GuildPermissions(createInstantInvite: false, kickMembers: false, banMembers: false, administrator: false, manageChannels: false, manageGuild: false, addReactions: false, viewAuditLog: false, sendMessages: false, sendTTSMessages: false, manageMessages: false, embedLinks: false, attachFiles: false, readMessageHistory: false, mentionEveryone: false, useExternalEmojis: false, connect: false, speak: false, muteMembers: false, deafenMembers: false, moveMembers: false, useVoiceActivation: false, changeNickname: false, manageNicknames: false, manageRoles: false, manageWebhooks: false, manageEmojis: false);
 
             GuildPermissions roleperms;
             // Check what flag was passed because C# dosen't have a dynamic way to only give a specific list of options
@@ -431,6 +445,9 @@ namespace DiscordBotGuardian
             // ToDo: Set Role Position
             // Actually create the role using the provided settings
             await Context.Guild.CreateRoleAsync(Role, roleperms, RoleColor, DisplayedRole);
+
+            // Pause after role creation
+            System.Threading.Thread.Sleep(500);
         }
 
     }
