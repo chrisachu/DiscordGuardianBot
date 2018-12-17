@@ -219,7 +219,7 @@ namespace DiscordBotGuardian
                     return true;
                 }
                 // ToDo: Update this command so it actually parses and is only an admin based command
-                // ToDo: Add a force read of the DB command for when they add roles
+                // ToDo: Update !help for these two commands
                 else if (splitmessage[0].ToLower() == "!testevent")
                 {
                     NewYear test = new NewYear();
@@ -229,6 +229,16 @@ namespace DiscordBotGuardian
                         await test.CreateNewYearAsync(context, "Austin", 19);
                     }).Start();
                     return true;
+                }
+                // If the command is to read the DB roles
+                else if (splitmessage[0].ToLower() == "!readroles")
+                {
+                    // Check if the user requesting is an admin or head guardian
+                    if (Validation.IsHGorAdmin(context, message) == true)
+                    {
+                        // Read the DB and update the user list
+                        users = Database.ReadDB(users);
+                    }
                 }
             }
             return false;

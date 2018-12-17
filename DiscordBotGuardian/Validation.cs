@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -126,6 +129,33 @@ namespace DiscordBotGuardian
                 }
             }
             return "";
+        }
+        /// <summary>
+        /// Check against the list of roles in the Server if the user is a HG or Admin
+        /// </summary>
+        public static bool IsHGorAdmin(CommandContext Context, SocketMessage User)
+        {
+            // Get the users info
+            var userinfo = Context.Guild.GetUserAsync(User.Author.Id) as IGuildUser;
+            // Check all the roles in the discord
+            foreach (var role in Context.Guild.Roles)
+            {
+                // If the role matches either option
+                if(role.Name == "Head-Guardian" || role.Name == "Admin")
+                {
+                    // Check the role against all of the ID's the user has
+                    foreach(var userrole in userinfo.RoleIds)
+                    {
+                        // If it matches return true
+                        if (role.Id == userrole)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            // Else just return false
+            return false;
         }
     }
 }
