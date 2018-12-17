@@ -107,15 +107,21 @@ namespace DiscordBotGuardian
             }
             return false;
         }
-
+        /// <summary>
+        /// Parse the carriers name to its full english name
+        /// </summary>
         public static string ParseCarrierName(string message)
         {
+            // Load the Provider DB
             List<SMS> providers = LoadSMSData();
+            // Read the message into RegionInfo
             RegionInfo region = new RegionInfo(message);
             foreach (SMS carrier in providers)
             {
+                // Check if the Name matches the Carrier Country
                 if (region.EnglishName == carrier.Country)
                 {
+                    // Return the correct name
                     return region.EnglishName;
                 }
             }

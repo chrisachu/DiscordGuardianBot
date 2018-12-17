@@ -260,6 +260,9 @@ namespace DiscordBotGuardian
             await SendTOSMessage(Context, "rulebook");
         }
 
+        /// <summary>
+        /// Used for deleting the last sent message in a channel (Only used for Rulebook currently)
+        /// </summary>
         private async Task DeleteLastMessage(CommandContext Context, string Channel)
         {
             // Get the list of channels
@@ -271,8 +274,11 @@ namespace DiscordBotGuardian
                 {
                     try
                     {
+                        // Convert the found channel to an IMessageChannel
                         var message = channelname as IMessageChannel;
+                        // Pull the last message and change it to a usable format
                         var messages = await message.GetMessagesAsync(1).FlattenAsync();
+                        // Delete the message based of its ID
                         await message.DeleteMessageAsync(messages.ToList()[0].Id);
                     }
                     catch { }
@@ -280,6 +286,9 @@ namespace DiscordBotGuardian
             }
             return;
         }
+        /// <summary>
+        /// Send the TOS message to a channel
+        /// </summary>
         private async Task SendTOSMessage(CommandContext Context, string Channel)
         {
             // Get the list of channels
@@ -287,9 +296,11 @@ namespace DiscordBotGuardian
             // Check if the channel exists
             foreach (var channelname in channels)
             {
+                // Make sure we are in the right channel
                 if (channelname.Name.ToString().ToLower().Trim() == Channel.ToString().ToLower().Trim())
                 {
                     var message = channelname as IMessageChannel;
+                    // Send the TOS
                     await message.SendMessageAsync(@"Welcome to the official Guardian Discord! Here, you will find the means to communicate with your fellow Guardians. 
 Please note the structure of this Discord as channels may have changed from previous years. 
 
