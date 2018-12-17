@@ -72,6 +72,7 @@ namespace DiscordBotGuardian
                     {
                         if (headers == true)
                         {
+                            // ToDo: Change the way we read the DB so we read it by header name rather than required row order
                             if (users.ElementAtOrDefault(userrow) != null)
                             {
                                 if (row[0].ToString() != "NULL")

@@ -140,7 +140,7 @@ namespace DiscordBotGuardian
                     // Set up Command Context
                     var context = new CommandContext(_client, usermessage);
                     // Check if the message sent matches an actual command in the approved or public commands lists
-                    if (await PublicCommands.ParsePublicCommandsAsync(message, users, context) == false && await ApprovedCommands.ParsePrivateCommandsAsync(message,users,client,context) == false)
+                    if (await PublicCommands.ParsePublicCommandsAsync(message, users, context) == false && await ApprovedCommands.ParsePrivateCommandsAsync(message,users,client,context,mailaccount) == false)
                     {
                         // If it dosen't match just send a text message of the info
                         Sendtext(message.Content, message.Author.Id.ToString().ToLower(), message.Channel.Name);
@@ -205,7 +205,10 @@ namespace DiscordBotGuardian
                 string userState = "";
                 try
                 {
-                    client.SendAsync(mailMessage, userState);
+                    if (mailMessage.Bcc.Count > 0)
+                    {
+                        client.SendAsync(mailMessage, userState);
+                    }
                 }
                 catch { }
             }
