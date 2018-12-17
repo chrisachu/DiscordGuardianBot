@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DiscordBotGuardian
 {
@@ -222,11 +223,27 @@ namespace DiscordBotGuardian
                 // ToDo: Update !help for these two commands
                 else if (splitmessage[0].ToLower() == "!testevent")
                 {
+
                     NewYear test = new NewYear();
                     new Thread(async () =>
                     {
                         Thread.CurrentThread.IsBackground = true;
-                        await test.CreateNewYearAsync(context, "Austin", 19);
+                        await test.GenerateRolesAsync(context, "Austin", 19);
+
+                    }).Start();
+                    await Task.Delay(1000);
+                    new Thread(async () =>
+                    {
+                        Thread.CurrentThread.IsBackground = true;
+                        await test.GenerateCategoriesAsync(context, "Austin", 19);
+
+                    }).Start();
+                    await Task.Delay(1000);
+                    new Thread(async () =>
+                    {
+                        Thread.CurrentThread.IsBackground = true;
+                        await test.GenerateChannelsAsync(context, "Austin", 19);
+
                     }).Start();
                     return true;
                 }
@@ -238,6 +255,8 @@ namespace DiscordBotGuardian
                     {
                         // Read the DB and update the user list
                         users = Database.ReadDB(users);
+                        // Notify the user the DB reload has completed
+                        await message.Channel.SendMessageAsync(message.Author.Mention + " The DB has been reloaded");
                     }
                 }
             }

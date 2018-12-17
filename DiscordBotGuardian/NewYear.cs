@@ -9,12 +9,12 @@ namespace DiscordBotGuardian
 {
     public class NewYear
     {
-        /// <summary>
-        /// Used for generating a new set of roles and channels for a new year
-        /// </summary>
-        public async Task CreateNewYearAsync(CommandContext Context, string Event, int Year)
-        {
 
+        /// <summary>
+        /// Used for generating a new set of roles
+        /// </summary>
+        public async Task GenerateRolesAsync(CommandContext Context, string Event, int Year)
+        {
             /// Create Roles
             /// 
             // Global Roles
@@ -50,10 +50,12 @@ namespace DiscordBotGuardian
 
             // Actual Event Role
             await CreateRole(Context, "Guardian-" + Event + "-" + Year, "Standard", Color.Green, true);
-
-            // Wait for Roles to Generate
-            System.Threading.Thread.Sleep(5000);
-
+        }
+        /// <summary>
+        /// Used for generating a new set of Categories
+        /// </summary>
+        public async Task GenerateCategoriesAsync(CommandContext Context, string Event, int Year)
+        {
             /// Create Global Perm set for all Guardians so we dont need to manually tack it on each time
             /// 
             // Generate list
@@ -116,8 +118,50 @@ namespace DiscordBotGuardian
             await CreateCategory(Context, "Tech-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Tech-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } });
             await CreateCategory(Context, "Happy-Hour-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Happy-Hour-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } });
 
-            // Wait for Categories to generate
-            System.Threading.Thread.Sleep(5000);
+        }
+
+        /// <summary>
+        /// Used for generating a new set of channels for a new year
+        /// </summary>
+        public async Task GenerateChannelsAsync(CommandContext Context, string Event, int Year)
+        {
+            /// Create Global Perm set for all Guardians so we dont need to manually tack it on each time
+            /// 
+            // Generate list
+            List<RolePermissions> GuardianEventsStandard = new List<RolePermissions>();
+            foreach (Discord.IRole existingrole in Context.Guild.Roles)
+            {
+                // Compare the list of roles in the discord with the Role
+                if (existingrole.Name.Contains("Guardian-"))
+                {
+                    GuardianEventsStandard.Add(new RolePermissions { Role = existingrole.Name, ChannelPermType = RolePermissions.ChannelPermissions("standard") });
+                }
+            }
+            // Add the event we are adding
+            GuardianEventsStandard.Add(new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") });
+            // Add default roles
+            GuardianEventsStandard.Add(new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
+            GuardianEventsStandard.Add(new RolePermissions { Role = "Staff", ChannelPermType = RolePermissions.ChannelPermissions("standard") });
+            GuardianEventsStandard.Add(new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
+
+
+
+
+            List<RolePermissions> GuardianEventsReadOnly = new List<RolePermissions>();
+            foreach (Discord.IRole existingrole in Context.Guild.Roles)
+            {
+                // Compare the list of roles in the discord with the Role
+                if (existingrole.Name.Contains("Guardian-"))
+                {
+                    GuardianEventsReadOnly.Add(new RolePermissions { Role = existingrole.Name, ChannelPermType = RolePermissions.ChannelPermissions("readonly") });
+                }
+            }
+            // Add the event we are adding
+            GuardianEventsReadOnly.Add(new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") });
+            // Add default roles
+            GuardianEventsReadOnly.Add(new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
+            GuardianEventsReadOnly.Add(new RolePermissions { Role = "Staff", ChannelPermType = RolePermissions.ChannelPermissions("standard") });
+            GuardianEventsReadOnly.Add(new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
 
 
             /// Create Channels
@@ -358,61 +402,63 @@ Once you understand these rules, go back to #landing and type '!rt RT - Site - U
             }
 
             // Wait for Category to Generate
-            System.Threading.Thread.Sleep(500);
-
-            // Check if we are passing roles
-            if (Roles != null)
+            await Task.Delay(1000);
+            if (newcategory != null)
             {
-                // Parse in the roles to add them to the channel
-                foreach (RolePermissions role in Roles)
+                // Check if we are passing roles
+                if (Roles != null)
                 {
-                    // Before we go any further let's see if the role already exists
-                    // If the role exists exit the task
-                    foreach (Discord.IRole existingrole in Context.Guild.Roles)
+                    // Parse in the roles to add them to the channel
+                    foreach (RolePermissions role in Roles)
                     {
-                        // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name.ToLower().Trim() == role.Role.ToLower().Trim())
+                        // Before we go any further let's see if the role already exists
+                        // If the role exists exit the task
+                        foreach (Discord.IRole existingrole in Context.Guild.Roles)
                         {
-                            // Add the selected roles to the channel using inhert as its base
-                            OverwritePermissions inheret = new OverwritePermissions();
-                            await newcategory.AddPermissionOverwriteAsync(existingrole, inheret);
+                            // Compare the list of roles in the discord with the Role
+                            if (existingrole.Name.ToLower().Trim() == role.Role.ToLower().Trim())
+                            {
+                                // Add the selected roles to the channel using inhert as its base
+                                OverwritePermissions inheret = new OverwritePermissions();
+                                await newcategory.AddPermissionOverwriteAsync(existingrole, inheret);
+                                break;
+                            }
+                        }
+                    }
+                    // Remove the everyone permission if it's not in the list
+                    bool permfound = false;
+                    foreach (RolePermissions perm in Roles)
+                    {
+                        if (perm.Role.ToLower().Contains("everyone") == true)
+                        {
+                            permfound = true;
                             break;
                         }
                     }
-                }
-                // Remove the everyone permission if it's not in the list
-                bool permfound = false;
-                foreach(RolePermissions perm in Roles)
-                {
-                    if(perm.Role.ToLower().Contains("everyone") == true)
+                    if (permfound == false)
                     {
-                        permfound = true;
-                        break;
-                    }
-                }
-                if (permfound == false)
-                {
-                    foreach (Discord.IRole existingrole in Context.Guild.Roles)
-                    {
-                        // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name.ToLower() == "@everyone")
+                        foreach (Discord.IRole existingrole in Context.Guild.Roles)
                         {
-                            OverwritePermissions denypermissions = new OverwritePermissions(createInstantInvite: PermValue.Deny, manageChannel: PermValue.Deny, addReactions: PermValue.Deny, viewChannel: PermValue.Deny, sendMessages: PermValue.Deny, sendTTSMessages: PermValue.Deny, manageMessages: PermValue.Deny, embedLinks: PermValue.Deny, attachFiles: PermValue.Deny, readMessageHistory: PermValue.Deny, mentionEveryone: PermValue.Deny, useExternalEmojis: PermValue.Deny, connect: PermValue.Deny, speak: PermValue.Deny, muteMembers: PermValue.Deny, deafenMembers: PermValue.Deny, moveMembers: PermValue.Deny, useVoiceActivation: PermValue.Deny, manageRoles: PermValue.Deny, manageWebhooks: PermValue.Deny);
-                            // Remove Everyones permissions
-                            await newcategory.AddPermissionOverwriteAsync(existingrole, denypermissions);
-                            break;
+                            // Compare the list of roles in the discord with the Role
+                            if (existingrole.Name.ToLower() == "@everyone")
+                            {
+                                OverwritePermissions denypermissions = new OverwritePermissions(createInstantInvite: PermValue.Deny, manageChannel: PermValue.Deny, addReactions: PermValue.Deny, viewChannel: PermValue.Deny, sendMessages: PermValue.Deny, sendTTSMessages: PermValue.Deny, manageMessages: PermValue.Deny, embedLinks: PermValue.Deny, attachFiles: PermValue.Deny, readMessageHistory: PermValue.Deny, mentionEveryone: PermValue.Deny, useExternalEmojis: PermValue.Deny, connect: PermValue.Deny, speak: PermValue.Deny, muteMembers: PermValue.Deny, deafenMembers: PermValue.Deny, moveMembers: PermValue.Deny, useVoiceActivation: PermValue.Deny, manageRoles: PermValue.Deny, manageWebhooks: PermValue.Deny);
+                                // Remove Everyones permissions
+                                await newcategory.AddPermissionOverwriteAsync(existingrole, denypermissions);
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            // Check if a position was provided
-            if (Position != null)
-            {
-                // Update its position
-                await newcategory.ModifyAsync(x =>
+                // Check if a position was provided
+                if (Position != null)
                 {
-                    x.Position = Position.Value;
-                });
+                    // Update its position
+                    await newcategory.ModifyAsync(x =>
+                    {
+                        x.Position = Position.Value;
+                    });
+                }
             }
         }
 
@@ -442,86 +488,88 @@ Once you understand these rules, go back to #landing and type '!rt RT - Site - U
             }
 
             // Wait for VO to Generate
-            System.Threading.Thread.Sleep(500);
-
-            // Check if roles were passed
-            if (Roles != null)
+            await Task.Delay(1000);
+            if (newchannel != null)
             {
-                // Parse in the roles to add them to the channel
-                foreach (RolePermissions role in Roles)
+                // Check if roles were passed
+                if (Roles != null)
                 {
-                    // Before we go any further let's see if the role already exists
-                    // If the role exists exit the task
-                    foreach (Discord.IRole existingrole in Context.Guild.Roles)
+                    // Parse in the roles to add them to the channel
+                    foreach (RolePermissions role in Roles)
                     {
-                        // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name.ToLower().Trim() == role.Role.ToLower().Trim())
+                        // Before we go any further let's see if the role already exists
+                        // If the role exists exit the task
+                        foreach (Discord.IRole existingrole in Context.Guild.Roles)
                         {
-                            // Add the selected roles to the channel using inhert as its base
-                            await newchannel.AddPermissionOverwriteAsync(existingrole, role.ChannelPermType);
+                            // Compare the list of roles in the discord with the Role
+                            if (existingrole.Name.ToLower().Trim() == role.Role.ToLower().Trim())
+                            {
+                                // Add the selected roles to the channel using inhert as its base
+                                await newchannel.AddPermissionOverwriteAsync(existingrole, role.ChannelPermType);
+                                break;
+                            }
+                        }
+                    }
+                    // Remove the everyone permission if it's not in the list
+                    bool permfound = false;
+                    foreach (RolePermissions perm in Roles)
+                    {
+                        if (perm.Role.ToLower().Contains("everyone") == true)
+                        {
+                            permfound = true;
                             break;
                         }
                     }
-                }
-                // Remove the everyone permission if it's not in the list
-                bool permfound = false;
-                foreach (RolePermissions perm in Roles)
-                {
-                    if (perm.Role.ToLower().Contains("everyone") == true)
+                    if (permfound == false)
                     {
-                        permfound = true;
-                        break;
-                    }
-                }
-                if (permfound == false)
-                {
-                    foreach (Discord.IRole existingrole in Context.Guild.Roles)
-                    {
-                        // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name.ToLower() == "@everyone")
+                        foreach (Discord.IRole existingrole in Context.Guild.Roles)
                         {
-                            OverwritePermissions denypermissions = new OverwritePermissions(createInstantInvite: PermValue.Deny, manageChannel: PermValue.Deny, addReactions: PermValue.Deny, viewChannel: PermValue.Deny, sendMessages: PermValue.Deny, sendTTSMessages: PermValue.Deny, manageMessages: PermValue.Deny, embedLinks: PermValue.Deny, attachFiles: PermValue.Deny, readMessageHistory: PermValue.Deny, mentionEveryone: PermValue.Deny, useExternalEmojis: PermValue.Deny, connect: PermValue.Deny, speak: PermValue.Deny, muteMembers: PermValue.Deny, deafenMembers: PermValue.Deny, moveMembers: PermValue.Deny, useVoiceActivation: PermValue.Deny, manageRoles: PermValue.Deny, manageWebhooks: PermValue.Deny);
-                            // Remove Everyones permissions
-                            await newchannel.AddPermissionOverwriteAsync(existingrole, denypermissions);
-                            break;
+                            // Compare the list of roles in the discord with the Role
+                            if (existingrole.Name.ToLower() == "@everyone")
+                            {
+                                OverwritePermissions denypermissions = new OverwritePermissions(createInstantInvite: PermValue.Deny, manageChannel: PermValue.Deny, addReactions: PermValue.Deny, viewChannel: PermValue.Deny, sendMessages: PermValue.Deny, sendTTSMessages: PermValue.Deny, manageMessages: PermValue.Deny, embedLinks: PermValue.Deny, attachFiles: PermValue.Deny, readMessageHistory: PermValue.Deny, mentionEveryone: PermValue.Deny, useExternalEmojis: PermValue.Deny, connect: PermValue.Deny, speak: PermValue.Deny, muteMembers: PermValue.Deny, deafenMembers: PermValue.Deny, moveMembers: PermValue.Deny, useVoiceActivation: PermValue.Deny, manageRoles: PermValue.Deny, manageWebhooks: PermValue.Deny);
+                                // Remove Everyones permissions
+                                await newchannel.AddPermissionOverwriteAsync(existingrole, denypermissions);
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            // Check if a category was passed
-            if (Category != null)
-            {
-                // Get the list of categories
-                IReadOnlyCollection<IGuildChannel> categories = await Context.Guild.GetCategoriesAsync();
-                ulong categoryId = 000000;
-                // Check if the category name matches the id if it does return the ID
-                foreach (var categoryname in categories)
+                // Check if a category was passed
+                if (Category != null)
                 {
-                    if (categoryname.Name.ToLower().Trim() == Category.ToLower().Trim())
+                    // Get the list of categories
+                    IReadOnlyCollection<IGuildChannel> categories = await Context.Guild.GetCategoriesAsync();
+                    ulong categoryId = 000000;
+                    // Check if the category name matches the id if it does return the ID
+                    foreach (var categoryname in categories)
                     {
-                        categoryId = categoryname.Id;
-                        break;
+                        if (categoryname.Name.ToLower().Trim() == Category.ToLower().Trim())
+                        {
+                            categoryId = categoryname.Id;
+                            break;
+                        }
                     }
-                }
 
-                // Add it to the category
-                await newchannel.ModifyAsync(x =>
+                    // Add it to the category
+                    await newchannel.ModifyAsync(x =>
+                    {
+                        x.CategoryId = categoryId;
+                    });
+                }
+                // Check if a position was provided
+                if (Position != null)
                 {
-                    x.CategoryId = categoryId;
-                });
-            }
-            // Check if a position was provided
-            if (Position != null)
-            {
-                // Update its position
-                await newchannel.ModifyAsync(x =>
+                    // Update its position
+                    await newchannel.ModifyAsync(x =>
+                    {
+                        x.Position = Position.Value;
+                    });
+                }
+                if (Roles == null)
                 {
-                    x.Position = Position.Value;
-                });
-            }
-            if (Roles == null)
-            {
-                await newchannel.SyncPermissionsAsync();
+                    await newchannel.SyncPermissionsAsync();
+                }
             }
         }
 
@@ -551,95 +599,99 @@ Once you understand these rules, go back to #landing and type '!rt RT - Site - U
             }
 
             // Wait for Channel to Generate
-            System.Threading.Thread.Sleep(500);
-
-            // Check if roles were passed
-            if (Roles != null)
+            await Task.Delay(1000);
+            if (newchannel != null)
             {
-                // Parse in the roles to add them to the channel
-                foreach (RolePermissions role in Roles)
+                // Check if roles were passed
+                if (Roles != null)
                 {
-                    // Before we go any further let's see if the role already exists
-                    // If the role exists exit the task
-                    foreach (Discord.IRole existingrole in Context.Guild.Roles)
+                    // Parse in the roles to add them to the channel
+                    foreach (RolePermissions role in Roles)
                     {
-                        // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name.ToLower().Trim() == role.Role.ToLower().Trim())
+                        // Before we go any further let's see if the role already exists
+                        // If the role exists exit the task
+                        foreach (Discord.IRole existingrole in Context.Guild.Roles)
                         {
-                            // Add the selected roles to the channel using inhert as its base
-                            await newchannel.AddPermissionOverwriteAsync(existingrole, role.ChannelPermType);
+                            // Compare the list of roles in the discord with the Role
+                            if (existingrole.Name.ToLower().Trim() == role.Role.ToLower().Trim())
+                            {
+                                // Add the selected roles to the channel using inhert as its base
+                                await newchannel.AddPermissionOverwriteAsync(existingrole, role.ChannelPermType);
+                                break;
+                            }
+                        }
+                    }
+                    // Remove the everyone permission if it's not in the list
+                    bool permfound = false;
+                    foreach (RolePermissions perm in Roles)
+                    {
+                        if (perm.Role.ToLower().Contains("everyone") == true)
+                        {
+                            permfound = true;
                             break;
                         }
                     }
-                }
-                // Remove the everyone permission if it's not in the list
-                bool permfound = false;
-                foreach (RolePermissions perm in Roles)
-                {
-                    if (perm.Role.ToLower().Contains("everyone") == true)
+                    if (permfound == false)
                     {
-                        permfound = true;
-                        break;
-                    }
-                }
-                if (permfound == false)
-                {
-                    foreach (Discord.IRole existingrole in Context.Guild.Roles)
-                    {
-                        // Compare the list of roles in the discord with the Role
-                        if (existingrole.Name.ToLower() == "@everyone")
+                        foreach (Discord.IRole existingrole in Context.Guild.Roles)
                         {
-                            OverwritePermissions denypermissions = new OverwritePermissions(createInstantInvite: PermValue.Deny, manageChannel: PermValue.Deny, addReactions: PermValue.Deny, viewChannel: PermValue.Deny, sendMessages: PermValue.Deny, sendTTSMessages: PermValue.Deny, manageMessages: PermValue.Deny, embedLinks: PermValue.Deny, attachFiles: PermValue.Deny, readMessageHistory: PermValue.Deny, mentionEveryone: PermValue.Deny, useExternalEmojis: PermValue.Deny, connect: PermValue.Deny, speak: PermValue.Deny, muteMembers: PermValue.Deny, deafenMembers: PermValue.Deny, moveMembers: PermValue.Deny, useVoiceActivation: PermValue.Deny, manageRoles: PermValue.Deny, manageWebhooks: PermValue.Deny);
-                            // Remove Everyones permissions
-                            await newchannel.AddPermissionOverwriteAsync(existingrole, denypermissions);
-                            break;
+                            // Compare the list of roles in the discord with the Role
+                            if (existingrole.Name.ToLower() == "@everyone")
+                            {
+                                OverwritePermissions denypermissions = new OverwritePermissions(createInstantInvite: PermValue.Deny, manageChannel: PermValue.Deny, addReactions: PermValue.Deny, viewChannel: PermValue.Deny, sendMessages: PermValue.Deny, sendTTSMessages: PermValue.Deny, manageMessages: PermValue.Deny, embedLinks: PermValue.Deny, attachFiles: PermValue.Deny, readMessageHistory: PermValue.Deny, mentionEveryone: PermValue.Deny, useExternalEmojis: PermValue.Deny, connect: PermValue.Deny, speak: PermValue.Deny, muteMembers: PermValue.Deny, deafenMembers: PermValue.Deny, moveMembers: PermValue.Deny, useVoiceActivation: PermValue.Deny, manageRoles: PermValue.Deny, manageWebhooks: PermValue.Deny);
+                                // Remove Everyones permissions
+                                await newchannel.AddPermissionOverwriteAsync(existingrole, denypermissions);
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            // Check if a description was passed, if it was update the description
-            if (Description != null)
-            {
-                // Modify the new channel created description
-                await newchannel.ModifyAsync(x =>
-                {
-                    x.Topic = Description;
-                });
-            }
-            // Check if a category was passed
-            if (Category != null)
-            {
-                // Get the list of categories
-                IReadOnlyCollection<IGuildChannel> categories = await Context.Guild.GetCategoriesAsync();
-                ulong categoryId = 000000;
-                // Check if the category name matches the id if it does return the ID
-                foreach (var categoryname in categories)
-                {
-                    if (categoryname.Name.ToLower().Trim() == Category.ToLower().Trim())
-                    {
-                        categoryId = categoryname.Id;
-                        break;
-                    }
-                }
 
-                // Add it to the category
-                await newchannel.ModifyAsync(x =>
+
+                // Check if a description was passed, if it was update the description
+                if (Description != null)
                 {
-                    x.CategoryId = categoryId;
-                });
-            }
-            // Check if a position was provided
-            if (Position != null)
-            {
-                // Update its position
-                await newchannel.ModifyAsync(x =>
+                    // Modify the new channel created description
+                    await newchannel.ModifyAsync(x =>
+                    {
+                        x.Topic = Description;
+                    });
+                }
+                // Check if a category was passed
+                if (Category != null)
                 {
-                    x.Position = Position.Value;
-                });
-            }
-            if (Roles == null)
-            {
-                await newchannel.SyncPermissionsAsync();
+                    // Get the list of categories
+                    IReadOnlyCollection<IGuildChannel> categories = await Context.Guild.GetCategoriesAsync();
+                    ulong categoryId = 000000;
+                    // Check if the category name matches the id if it does return the ID
+                    foreach (var categoryname in categories)
+                    {
+                        if (categoryname.Name.ToLower().Trim() == Category.ToLower().Trim())
+                        {
+                            categoryId = categoryname.Id;
+                            break;
+                        }
+                    }
+
+                    // Add it to the category
+                    await newchannel.ModifyAsync(x =>
+                    {
+                        x.CategoryId = categoryId;
+                    });
+                }
+                // Check if a position was provided
+                if (Position != null)
+                {
+                    // Update its position
+                    await newchannel.ModifyAsync(x =>
+                    {
+                        x.Position = Position.Value;
+                    });
+                }
+                if (Roles == null)
+                {
+                    await newchannel.SyncPermissionsAsync();
+                }
             }
         }
 
@@ -667,7 +719,7 @@ Once you understand these rules, go back to #landing and type '!rt RT - Site - U
             await Context.Guild.CreateRoleAsync(Role, roleperms, RoleColor, DisplayedRole);
 
             // Pause after role creation
-            System.Threading.Thread.Sleep(500);
+            await Task.Delay(200);
         }
 
     }
