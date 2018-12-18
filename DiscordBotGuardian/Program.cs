@@ -149,6 +149,20 @@ namespace DiscordBotGuardian
                     }
 
                 }
+                // Check if there were any mentions
+                else if (message.MentionedUsers.Count > 0)
+                {
+                    // Check if the user mentioned the bot
+                    foreach (var mention in message.MentionedUsers)
+                    {
+                        if(mention.Id == _client.CurrentUser.Id)
+                        {
+                            // If so send a gif
+                            await message.Channel.SendMessageAsync(Angela.RandomAngela());
+                            break;
+                        }
+                    }
+                }
                 // If its not just send a text message
                 else
                 {

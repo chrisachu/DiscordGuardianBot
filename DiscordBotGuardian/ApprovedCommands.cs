@@ -11,7 +11,6 @@ namespace DiscordBotGuardian
 {
     public class ApprovedCommands
     {
-        // ToDo: Add Angela Lansbury Tagging commands
         // ToDo: Prefer phone commands through DM rather than in chat
         /// <summary>
         /// Task for command parsing that only authenticated users can run
