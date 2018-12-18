@@ -221,3 +221,4 @@ DiscordBotGuardian/sms.json
 DiscordBotGuardian/token.json/Google.Apis.Auth.OAuth2.Responses.TokenResponse-user
 DiscordBotGuardian/credentials.json
 DiscordBotGuardian/bin/*
+DiscordBotGuardian/log*

@@ -134,6 +134,8 @@ namespace DiscordBotGuardian
             if (usermessage == null) return;
             if (message.Content.Length > 0)
             {
+                // Log Everything
+                WriteLog(message.Channel + ": " + message.Author + " - " + message.Content);
                 // Check if the message is a command based off if a bang is the first letter
                 if (message.Content[0].ToString() == "!")
                 {
@@ -154,7 +156,33 @@ namespace DiscordBotGuardian
                 }
             }
         }
-        
+        public static void WriteLog(string strLog)
+        {
+            StreamWriter log;
+            FileStream fileStream = null;
+            DirectoryInfo logDirInfo = null;
+            FileInfo logFileInfo;
+
+            // Get the current directory
+            string curDir = Directory.GetCurrentDirectory();
+            string logFilePath = curDir + "/";
+            logFilePath = logFilePath + "Log-" + System.DateTime.Today.ToString("MM-dd-yyyy") + "." + "txt";
+            logFileInfo = new FileInfo(logFilePath);
+            logDirInfo = new DirectoryInfo(logFileInfo.DirectoryName);
+            if (!logDirInfo.Exists) logDirInfo.Create();
+            if (!logFileInfo.Exists)
+            {
+                fileStream = logFileInfo.Create();
+            }
+            else
+            {
+                fileStream = new FileStream(logFilePath, FileMode.Append);
+            }
+            log = new StreamWriter(fileStream);
+            log.WriteLine(strLog);
+            log.Close();
+        }
+
         // ToDo: Validate new way of loading userdata works, all writes everywhere else are correct only need to check if they update for SMS
         /// <summary>
         /// Used for sending a text message via email

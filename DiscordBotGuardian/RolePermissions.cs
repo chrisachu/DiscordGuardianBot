@@ -23,10 +23,18 @@ namespace DiscordBotGuardian
                 // Return everything as deny
                 return new OverwritePermissions(createInstantInvite: PermValue.Deny, manageChannel: PermValue.Deny, addReactions: PermValue.Deny, viewChannel: PermValue.Deny, sendMessages: PermValue.Deny, sendTTSMessages: PermValue.Deny, manageMessages: PermValue.Deny, embedLinks: PermValue.Deny, attachFiles: PermValue.Deny, readMessageHistory: PermValue.Deny, mentionEveryone: PermValue.Deny, useExternalEmojis: PermValue.Deny, connect: PermValue.Deny, speak: PermValue.Deny, muteMembers: PermValue.Deny, deafenMembers: PermValue.Deny, moveMembers: PermValue.Deny, useVoiceActivation: PermValue.Deny, manageRoles: PermValue.Deny, manageWebhooks: PermValue.Deny);
             }
+            else if(type.ToLower() == "readonly")
+            {
+                return new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Deny, readMessageHistory: PermValue.Allow, connect: PermValue.Allow, speak: PermValue.Deny, useVoiceActivation: PermValue.Deny);
+            }
+            else if(type.ToLower() == "nohistory")
+            {
+                return new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow, readMessageHistory: PermValue.Deny);
+            }
             else
             {
                 // return inherit
-                return new OverwritePermissions();
+                return new OverwritePermissions(viewChannel: PermValue.Allow);
             }
         }
         /// <summary>

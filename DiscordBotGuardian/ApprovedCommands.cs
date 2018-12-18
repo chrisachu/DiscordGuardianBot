@@ -231,14 +231,14 @@ namespace DiscordBotGuardian
                         await test.GenerateRolesAsync(context, "Austin", 19);
 
                     }).Start();
-                    await Task.Delay(1000);
+                    await Task.Delay(15000);
                     new Thread(async () =>
                     {
                         Thread.CurrentThread.IsBackground = true;
                         await test.GenerateCategoriesAsync(context, "Austin", 19);
 
                     }).Start();
-                    await Task.Delay(1000);
+                    await Task.Delay(5000);
                     new Thread(async () =>
                     {
                         Thread.CurrentThread.IsBackground = true;
@@ -259,6 +259,7 @@ namespace DiscordBotGuardian
                         await message.Channel.SendMessageAsync(message.Author.Mention + " The DB has been reloaded");
                     }
                 }
+                // ToDo: Delete Year Command
             }
             return false;
         }
