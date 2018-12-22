@@ -20,12 +20,13 @@ namespace DiscordBotGuardian
             // Global Roles
             await CreateRole(Context, "Admin", "Admin", Color.Purple, true);
             await CreateRole(Context, "Head-Guardian", "Admin", Color.Red, true);
-            await CreateRole(Context, "Staff", "Mod", Color.Red, true);
+            await CreateRole(Context, "Head-Guardian-" + Event + "-" + Year, "Admin", Color.Red, false);
+            await CreateRole(Context, "Staff", "Mod", Color.Magenta, true);
             await CreateRole(Context, "Team-Lead", "Display", Color.Blue, true);
             await CreateRole(Context, "Mod", "Mod", Color.LightOrange, true);
 
             // Team Related Roles
-            await CreateRole(Context, "Team-Lead-" + Event, "Mod", Color.Default, false);
+            await CreateRole(Context, "Team-Lead-" + Event + "-" + Year, "Mod", Color.Default, false);
             await CreateRole(Context, "Crisis-Management-" + Event + "-" + Year, "Standard", Color.Default, false);
             await CreateRole(Context, "Center-Stage-" + Event + "-" + Year, "Standard", Color.Default, false);
             await CreateRole(Context, "Lead-CS-" + Event + "-" + Year, "Standard", Color.Default, false);
@@ -65,11 +66,13 @@ namespace DiscordBotGuardian
                 // Compare the list of roles in the discord with the Role
                 if (existingrole.Name.Contains("Guardian-"))
                 {
-                    GuardianEventsStandard.Add(new RolePermissions { Role = existingrole.Name, ChannelPermType = RolePermissions.ChannelPermissions("standard") });
+                    if (existingrole.Name.Contains("Head-Guardian-") == false)
+                    {
+                        GuardianEventsStandard.Add(new RolePermissions { Role = existingrole.Name, ChannelPermType = RolePermissions.ChannelPermissions("standard") });
+                    }
+                   
                 }
             }
-            // Add the event we are adding
-            GuardianEventsStandard.Add(new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") });
             // Add default roles
             GuardianEventsStandard.Add(new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
             GuardianEventsStandard.Add(new RolePermissions { Role = "Staff", ChannelPermType = RolePermissions.ChannelPermissions("standard") });
@@ -87,10 +90,8 @@ namespace DiscordBotGuardian
                     GuardianEventsReadOnly.Add(new RolePermissions { Role = existingrole.Name, ChannelPermType = RolePermissions.ChannelPermissions("readonly") });
                 }
             }
-            // Add the event we are adding
-            GuardianEventsReadOnly.Add(new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") });
             // Add default roles
-            GuardianEventsReadOnly.Add(new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
+            GuardianEventsReadOnly.Add(new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") });
             GuardianEventsReadOnly.Add(new RolePermissions { Role = "Staff", ChannelPermType = RolePermissions.ChannelPermissions("standard") });
             GuardianEventsReadOnly.Add(new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
 
@@ -99,10 +100,13 @@ namespace DiscordBotGuardian
             // Global Categories
             await CreateCategory(Context, "Administration", null, 1);
             await CreateCategory(Context, "Global", GuardianEventsStandard, 2);
+            await CreateCategory(Context, "Archive", GuardianEventsStandard, 2);
+            GuardianEventsStandard.Remove(new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
+            GuardianEventsStandard.Add(new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") });
 
             // Event Based Categories
             await CreateCategory(Context, Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } });
-            await CreateCategory(Context, "Command-Center-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Staff", ChannelPermType = RolePermissions.ChannelPermissions("standard") }, new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Team-Lead-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } });
+            await CreateCategory(Context, "Command-Center-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Staff", ChannelPermType = RolePermissions.ChannelPermissions("standard") }, new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Team-Lead-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") }, new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") } });
             await CreateCategory(Context, Event + "-Commons-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } });
             await CreateCategory(Context, "Center-Stage-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Center-Stage-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } });
             await CreateCategory(Context, "Dispatch-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Dispatch-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } });
@@ -140,7 +144,7 @@ namespace DiscordBotGuardian
             // Add the event we are adding
             GuardianEventsStandard.Add(new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") });
             // Add default roles
-            GuardianEventsStandard.Add(new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
+            GuardianEventsStandard.Add(new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") });
             GuardianEventsStandard.Add(new RolePermissions { Role = "Staff", ChannelPermType = RolePermissions.ChannelPermissions("standard") });
             GuardianEventsStandard.Add(new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
 
@@ -159,7 +163,7 @@ namespace DiscordBotGuardian
             // Add the event we are adding
             GuardianEventsReadOnly.Add(new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") });
             // Add default roles
-            GuardianEventsReadOnly.Add(new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
+            GuardianEventsReadOnly.Add(new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") });
             GuardianEventsReadOnly.Add(new RolePermissions { Role = "Staff", ChannelPermType = RolePermissions.ChannelPermissions("standard") });
             GuardianEventsReadOnly.Add(new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") });
 
@@ -174,6 +178,7 @@ namespace DiscordBotGuardian
             await CreateChannel(Context, "rulebook", new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Everyone", ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, "Announcements for everyone.", "Administration", 5);
             await CreateChannel(Context, "landing", new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Everyone", ChannelPermType = RolePermissions.ChannelPermissions("nohistory") } }, "Limbo where new users wait for roles to be assigned.", "Administration", 6);
 
+
             // Global Category Channels
             await CreateChannel(Context, "guardian-lounge", null, "Our Patron Saint, Dame Angela Lansbury", "Global", 1);
             await CreateChannel(Context, "movies-shows", null, "Talking about movies, tv shows, and rabb.it", "Global", 2);
@@ -186,10 +191,10 @@ namespace DiscordBotGuardian
 
             // Event Category Channels
             // Command Center
-            await CreateChannel(Context, "command-chat-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Team-Lead-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } }, "HGs and TLs", "Command-Center-" + Event + "-" + Year, 1);
-            await CreateChannel(Context, "crisis-center-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Crisis-Management-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } }, "Direct line: HGs and Response TLs.", "Command-Center-" + Event + "-" + Year, 2);
-            await CreateChannel(Context, "announcements-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, "Announcements for RTX", "Command-Center-" + Event + "-" + Year, 3);
-            await CreateChannel(Context, "links-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, "Important links you should probably bookmark.", "Command-Center-" + Event + "-" + Year, 4);
+            await CreateChannel(Context, "command-chat-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Team-Lead-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } }, "HGs and TLs", "Command-Center-" + Event + "-" + Year, 1);
+            await CreateChannel(Context, "crisis-center-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Crisis-Management-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") } }, "Direct line: HGs and Response TLs.", "Command-Center-" + Event + "-" + Year, 2);
+            await CreateChannel(Context, "announcements-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, "Announcements for RTX", "Command-Center-" + Event + "-" + Year, 3);
+            await CreateChannel(Context, "links-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, "Important links you should probably bookmark.", "Command-Center-" + Event + "-" + Year, 4);
 
 
             // Commons
@@ -197,9 +202,9 @@ namespace DiscordBotGuardian
             await CreateChannel(Context, "ride-room-share-" + Event + "-" + Year, null, "Because no one uses the forum anymore.", Event + "-Commons-" + Year, 2);
             await CreateChannel(Context, "meetups-events-" + Event + "-" + Year, null, "It's like matchmaking, but in real life.", Event + "-Commons-" + Year, 3);
             await CreateChannel(Context, "town-hall-" + Event + "-" + Year, null, "Ask the HGs anything appropriate.", Event + "-Commons-" + Year, 4);
-            await CreateVoiceChannel(Context, Event + "-vc-1", null, Event + "-Commons-" + Year, 5);
-            await CreateVoiceChannel(Context, Event + "-vc-2", null, Event + "-Commons-" + Year, 6);
-            await CreateVoiceChannel(Context, "town-hall-vc-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, Event + "-Commons-" + Year, 7);
+            await CreateVoiceChannel(Context, Event + "-" + Year + "-vc-1", null, Event + "-Commons-" + Year, 5);
+            await CreateVoiceChannel(Context, Event + "-" + Year + "-vc-2", null, Event + "-Commons-" + Year, 6);
+            await CreateVoiceChannel(Context, "town-hall-vc-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, Event + "-Commons-" + Year, 7);
 
             // Team Chats
             // Center-Stage
@@ -299,37 +304,11 @@ namespace DiscordBotGuardian
 
             /// Messages in the rulebook page
             // Clear out old TOS
-            await DeleteLastMessage(Context, "rulebook");
+            await SentDiscordCommands.DeleteLastMessage(Context, "rulebook");
             // Post new TOS
             await SendTOSMessage(Context, "rulebook");
         }
 
-        /// <summary>
-        /// Used for deleting the last sent message in a channel (Only used for Rulebook currently)
-        /// </summary>
-        private async Task DeleteLastMessage(CommandContext Context, string Channel)
-        {
-            // Get the list of channels
-            IReadOnlyCollection<IGuildChannel> channels = await Context.Guild.GetChannelsAsync();
-            // Check if the channel exists
-            foreach (var channelname in channels)
-            {
-                if (channelname.Name.ToString().ToLower().Trim() == Channel.ToString().ToLower().Trim())
-                {
-                    try
-                    {
-                        // Convert the found channel to an IMessageChannel
-                        var message = channelname as IMessageChannel;
-                        // Pull the last message and change it to a usable format
-                        var messages = await message.GetMessagesAsync(1).FlattenAsync();
-                        // Delete the message based of its ID
-                        await message.DeleteMessageAsync(messages.ToList()[0].Id);
-                    }
-                    catch { }
-                }
-            }
-            return;
-        }
         /// <summary>
         /// Send the TOS message to a channel
         /// </summary>
@@ -419,8 +398,7 @@ Once you understand these rules, go back to #landing and type '!rt RT - Site - U
                             if (existingrole.Name.ToLower().Trim() == role.Role.ToLower().Trim())
                             {
                                 // Add the selected roles to the channel using inhert as its base
-                                OverwritePermissions inheret = new OverwritePermissions();
-                                await newcategory.AddPermissionOverwriteAsync(existingrole, inheret);
+                                await newcategory.AddPermissionOverwriteAsync(existingrole, role.ChannelPermType);
                                 break;
                             }
                         }
@@ -702,17 +680,24 @@ Once you understand these rules, go back to #landing and type '!rt RT - Site - U
         private async Task CreateRole(CommandContext Context, string Role, string Perms, Color RoleColor, bool DisplayedRole)
         {
             // Before we go any further let's see if the role already exists
-            // If the role exists exit the task
+
+            // Grab Roles
+            GuildPermissions roleperms = RolePermissions.GuildPermissions(Perms.ToLower().Trim());
+            // If the role exists exit the task and update
             foreach (Discord.IRole existingrole in Context.Guild.Roles)
             {
                 // Compare the list of roles in the discord with the Role
                 if (existingrole.Name.ToLower().Trim() == Role.ToLower().Trim())
                 {
+                    await existingrole.ModifyAsync(x =>
+                    {
+                        x.Permissions = roleperms;
+                        x.Hoist = DisplayedRole;
+                        x.Color = RoleColor;
+                    });
                     return;
                 }
             }
-
-            GuildPermissions roleperms = RolePermissions.GuildPermissions(Perms.ToLower().Trim());
 
             // ToDo: Set Role Position
             // Actually create the role using the provided settings

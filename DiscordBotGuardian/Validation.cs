@@ -133,17 +133,17 @@ namespace DiscordBotGuardian
         /// <summary>
         /// Check against the list of roles in the Server if the user is a HG or Admin
         /// </summary>
-        public static bool IsHGorAdmin(CommandContext Context, SocketMessage User)
+        public static async System.Threading.Tasks.Task<bool> IsHGorAdminAsync(CommandContext Context, SocketMessage User)
         {
             try
             {
                 // Get the users info
-                var userinfo = Context.Guild.GetUserAsync(User.Author.Id) as IGuildUser;
+                var userinfo = await Context.Guild.GetUserAsync(User.Author.Id) as IGuildUser;
                 // Check all the roles in the discord
                 foreach (var role in Context.Guild.Roles)
                 {
                     // If the role matches either option
-                    if (role.Name == "Head-Guardian" || role.Name == "Admin")
+                    if (role.Name.ToLower().Trim() == "head-guardian" || role.Name.ToLower().Trim() == "admin")
                     {
                         // Check the role against all of the ID's the user has
                         foreach (var userrole in userinfo.RoleIds)

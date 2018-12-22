@@ -145,7 +145,7 @@ namespace DiscordBotGuardian
                     if (await PublicCommands.ParsePublicCommandsAsync(message, users, context) == false && await ApprovedCommands.ParsePrivateCommandsAsync(message,users,client,context,mailaccount) == false)
                     {
                         // If it dosen't match just send a text message of the info
-                        Sendtext(message.Content, message.Author.Id.ToString().ToLower(), message.Channel.Name);
+                        Sendtext(message.Content, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
                     }
 
                 }
@@ -166,10 +166,14 @@ namespace DiscordBotGuardian
                 // If its not just send a text message
                 else
                 {
-                    Sendtext(message.Content, message.Author.Id.ToString().ToLower(), message.Channel.Name);
+                    Sendtext(message.Content, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
                 }
             }
         }
+
+        /// <summary>
+        /// Write a string to the log file
+        /// </summary>
         public static void WriteLog(string strLog)
         {
             StreamWriter log;
@@ -197,11 +201,10 @@ namespace DiscordBotGuardian
             log.Close();
         }
 
-        // ToDo: Validate new way of loading userdata works, all writes everywhere else are correct only need to check if they update for SMS
         /// <summary>
         /// Used for sending a text message via email
         /// </summary>
-        private static void Sendtext(string message, string author, string channel)
+        private static void Sendtext(string message, string author, string channel, string id)
         {
             // Double check the message is not empty (empty in the case of pictures)
             if (message.Trim() != "")
@@ -218,7 +221,7 @@ namespace DiscordBotGuardian
                     if (person.DiscordUsername != null)
                     {
                         // Make sure the message is not coming from the author
-                        if (person.DiscordUsername.ToLower() != author.ToLower())
+                        if (person.DiscordUsername.ToLower() != id.ToLower())
                         {
                             // Check what channels and endpoint they have assigned
                             if (person.Channels != null && person.PhoneEndpoint != null)
@@ -234,14 +237,18 @@ namespace DiscordBotGuardian
                     }
                 }
                 // If the message is greator than 160 characters truncate it
-                if (message.Length > 160)
+                if (message.Length > 155)
                 {
-                    mailMessage.Body = message.ToString().Substring(0, 160);
+                    int channellength = channel.Length + 1;
+                    int chanl = 155 - channellength;
+                    int authorlength = author.Length + 1;
+                    int messagelength = chanl - authorlength;
+                    mailMessage.Body = channel.ToUpper() + ":" + author + "-" + message.ToString().Substring(0, messagelength);
                 }
                 // Else just set the body as the message
                 else
                 {
-                    mailMessage.Body = message;
+                    mailMessage.Body = channel.ToUpper() + ":" + author + "-" + message;
                 }
                 // Send the text
                 string userState = "";

@@ -31,7 +31,7 @@ namespace DiscordBotGuardian
                             found = false;
                         }
                         // Find that the user has not been authenticated yet
-                        else if (user.RTUsername == message.Content.Split()[1].ToLower() && user.Authenticated == false)
+                        else if (user.RTUsername == message.Content.Split()[1].ToLower())
                         {
                             // Update the user info in the Sheets DB
                             users = Database.UpdateUser(message.Content.Split()[1].ToLower(), "DiscordUsername", message.Author.Id.ToString().ToLower(), users);
@@ -49,16 +49,29 @@ namespace DiscordBotGuardian
                                     }
                                 }
                             }
-                            // ToDo: Assign correct role not hardcoded
-                            if (roles.Contains("Guardian-US-2018") == false)
+                            if (user.Event != null)
                             {
-                                roles.Add("Guardian-US-2018");
+                                if (user.Event.Count != 0)
+                                {
+                                    foreach (var eventstring in user.Event)
+                                    {
+                                        if (roles.Contains("Guardian-" + eventstring) == false)
+                                        {
+                                            roles.Add("Guardian-" + eventstring);
+                                            // Update the users DB to contain the new role
+                                            users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "Roles", "", users, roles);
+                                            // Actually assign the new role
+                                            await SentDiscordCommands.RoleTask(context, "Guardian-" + eventstring);
+                                            // Update the variable
+                                            user.Event.RemoveAt(user.Event.IndexOf(eventstring));
+                                            // Remove the event from the Users info and only store it in the roles param
+                                            users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "Event", "", users, user.Event);
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
-                            // Update the users DB to contain the new role
-                            users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "Roles", "", users, roles);
-                            // Actually assign the new role
-                            await SentDiscordCommands.RoleTask(context, "Guardian-US-2018");
-                            found = true;
                             break;
                         }
                     }
@@ -86,7 +99,7 @@ namespace DiscordBotGuardian
                 // Else show them every command available
                 else
                 {
-                    await message.Channel.SendMessageAsync("The commands available are, " + Environment.NewLine + "!sms - To enable or disable SMS for your device (You will have to register your phone if you have not yet)" + Environment.NewLine + "!notify - Type it in the channel you want to receive SMS notifications for" + Environment.NewLine + "!registerphone 1234567890 \"United States\" \"Verizon Wireless\" - Use this command to register your phone as a device to get texts on. (Number, Country, Carrier)");
+                    await message.Channel.SendMessageAsync("The commands available are, " + Environment.NewLine + "!sms - To enable or disable SMS for your device (You will have to register your phone if you have not yet)" + Environment.NewLine + "!notify - Type it in the channel you want to receive SMS notifications for" + Environment.NewLine + "!registerphone 1234567890 \"United States\" \"Verizon Wireless\" - Use this command to register your phone as a device to get texts on. (Number, Country, Carrier)" + Environment.NewLine + "(Admin Only) !newevent EVENT YEAR - Generates a new guardian event and channels for RTX" + Environment.NewLine + "(Admin Only) !deleteevent EVENT YEAR - Deletes a previous set of RTX channels and roles, not including each bar" + Environment.NewLine + "(Admin Only) !readroles - Updates everyones team roles based off the DB sheet" + Environment.NewLine + "(Team Lead Only) !squadlead USER EVENT - Makes a user a squad lead for that users team");
                 }
                 return true;
             }
