@@ -10,7 +10,7 @@ namespace DiscordBotGuardian
         /// <summary>
         /// Setting the Team that the user is on
         /// </summary>
-        public string Team { get; set; }
+        public List<string> Team { get; set; }
 
         /// <summary>
         /// Setting their RT Username

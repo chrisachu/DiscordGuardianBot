@@ -68,48 +68,56 @@ namespace DiscordBotGuardian
                     int newuserrow = 0;
                     int userrow = 0;
                     bool headers = false;
+                    int rtusername = 0;
+                    int team = 0;
+                    int phoneendpoint = 0;
+                    int authenticated = 0;
+                    int discordusername = 0;
+                    int roles = 0;
+                    int sms = 0;
+                    int channels = 0;
+                    int eventname = 0;
                     foreach (var row in values)
                     {
                         if (headers == true)
                         {
-                            // ToDo: Change the way we read the DB so we read it by header name rather than required row order
                             if (users.ElementAtOrDefault(userrow) != null)
                             {
-                                if (row[0].ToString() != "NULL")
+                                if (row[rtusername].ToString() != "NULL")
                                 {
-                                    users[userrow].RTUsername = row[0].ToString();
+                                    users[userrow].RTUsername = row[rtusername].ToString();
                                 }
-                                if (row[1].ToString() != "NULL")
+                                if (row[team].ToString() != "NULL")
                                 {
-                                    users[userrow].Team = row[1].ToString();
+                                    users[userrow].Team = row[team].ToString().Split(',').ToList();
                                 }
-                                if (row[2].ToString() != "NULL")
+                                if (row[phoneendpoint].ToString() != "NULL")
                                 {
-                                    users[userrow].PhoneEndpoint = row[2].ToString();
+                                    users[userrow].PhoneEndpoint = row[phoneendpoint].ToString();
                                 }
-                                if (row[3].ToString() != "NULL")
+                                if (row[authenticated].ToString() != "NULL")
                                 {
-                                    users[userrow].Authenticated = Convert.ToBoolean(row[3].ToString());
+                                    users[userrow].Authenticated = Convert.ToBoolean(row[authenticated].ToString());
                                 }
-                                if (row[4].ToString() != "NULL")
+                                if (row[discordusername].ToString() != "NULL")
                                 {
-                                    users[userrow].DiscordUsername = row[4].ToString();
+                                    users[userrow].DiscordUsername = row[discordusername].ToString();
                                 }
-                                if (row[5].ToString() != "NULL")
+                                if (row[roles].ToString() != "NULL")
                                 {
-                                    users[userrow].Roles = row[5].ToString().Split(',').ToList();
+                                    users[userrow].Roles = row[roles].ToString().Split(',').ToList();
                                 }
-                                if (row[6].ToString() != "NULL")
+                                if (row[sms].ToString() != "NULL")
                                 {
-                                    users[userrow].SMS = Convert.ToBoolean(row[6].ToString());
+                                    users[userrow].SMS = Convert.ToBoolean(row[sms].ToString());
                                 }
-                                if (row[7].ToString() != "NULL")
+                                if (row[channels].ToString() != "NULL")
                                 {
-                                    users[userrow].Channels = row[7].ToString().Split(',').ToList();
+                                    users[userrow].Channels = row[channels].ToString().Split(',').ToList();
                                 }
-                                if (row[8].ToString() != "NULL")
+                                if (row[eventname].ToString() != "NULL")
                                 {
-                                    users[userrow].Event = row[8].ToString().Split(',').ToList();
+                                    users[userrow].Event = row[eventname].ToString().Split(',').ToList();
                                 }
                             }
                             else
@@ -119,41 +127,41 @@ namespace DiscordBotGuardian
                                     UserData tempnewuser = new UserData();
                                     newuser.Add(tempnewuser);
                                 }
-                                if (row[0].ToString() != "NULL")
+                                if (row[rtusername].ToString() != "NULL")
                                 {
-                                    newuser[newuserrow].RTUsername = row[0].ToString();
+                                    newuser[newuserrow].RTUsername = row[rtusername].ToString();
                                 }
-                                if (row[1].ToString() != "NULL")
+                                if (row[team].ToString() != "NULL")
                                 {
-                                    newuser[newuserrow].Team = row[1].ToString();
+                                    newuser[newuserrow].Team = row[team].ToString().Split(',').ToList();
                                 }
-                                if (row[2].ToString() != "NULL")
+                                if (row[phoneendpoint].ToString() != "NULL")
                                 {
-                                    newuser[newuserrow].PhoneEndpoint = row[2].ToString();
+                                    newuser[newuserrow].PhoneEndpoint = row[phoneendpoint].ToString();
                                 }
-                                if (row[3].ToString() != "NULL")
+                                if (row[authenticated].ToString() != "NULL")
                                 {
-                                    newuser[newuserrow].Authenticated = Convert.ToBoolean(row[3].ToString());
+                                    newuser[newuserrow].Authenticated = Convert.ToBoolean(row[authenticated].ToString());
                                 }
-                                if (row[4].ToString() != "NULL")
+                                if (row[discordusername].ToString() != "NULL")
                                 {
-                                    newuser[newuserrow].DiscordUsername = row[4].ToString();
+                                    newuser[newuserrow].DiscordUsername = row[discordusername].ToString();
                                 }
-                                if (row[5].ToString() != "NULL")
+                                if (row[roles].ToString() != "NULL")
                                 {
-                                    newuser[newuserrow].Roles = row[5].ToString().Split(',').ToList();
+                                    newuser[newuserrow].Roles = row[roles].ToString().Split(',').ToList();
                                 }
-                                if (row[6].ToString() != "NULL")
+                                if (row[sms].ToString() != "NULL")
                                 {
-                                    newuser[newuserrow].SMS = Convert.ToBoolean(row[6].ToString());
+                                    newuser[newuserrow].SMS = Convert.ToBoolean(row[sms].ToString());
                                 }
-                                if (row[7].ToString() != "NULL")
+                                if (row[channels].ToString() != "NULL")
                                 {
-                                    newuser[newuserrow].Channels = row[7].ToString().Split(',').ToList();
+                                    newuser[newuserrow].Channels = row[channels].ToString().Split(',').ToList();
                                 }
-                                if (row[8].ToString() != "NULL")
+                                if (row[eventname].ToString() != "NULL")
                                 {
-                                    newuser[newuserrow].Event = row[8].ToString().Split(',').ToList();
+                                    newuser[newuserrow].Event = row[eventname].ToString().Split(',').ToList();
                                 }
                                 newuserrow++;
                             }
@@ -161,6 +169,47 @@ namespace DiscordBotGuardian
                         }
                         else
                         {
+                            int counter = 0;
+                            foreach(var headerrow in row)
+                            { 
+                                if (headerrow.ToString().ToLower().Trim() == "rtusername")
+                                {
+                                    rtusername = counter;
+                                }
+                                else if (headerrow.ToString().ToLower().Trim() == "team")
+                                {
+                                    team = counter;
+                                }
+                                else if (headerrow.ToString().ToLower().Trim() == "phoneendpoint")
+                                {
+                                    phoneendpoint = counter;
+                                }
+                                else if (headerrow.ToString().ToLower().Trim() == "authenticated")
+                                {
+                                    authenticated = counter;
+                                }
+                                else if (headerrow.ToString().ToLower().Trim() == "discordusername")
+                                {
+                                    discordusername = counter;
+                                }
+                                else if (headerrow.ToString().ToLower().Trim() == "roles")
+                                {
+                                    roles = counter;
+                                }
+                                else if (headerrow.ToString().ToLower().Trim() == "sms")
+                                {
+                                    sms = counter;
+                                }
+                                else if (headerrow.ToString().ToLower().Trim() == "channels")
+                                {
+                                    channels = counter;
+                                }
+                                else if (headerrow.ToString().ToLower().Trim() == "event")
+                                {
+                                    eventname = counter;
+                                }
+                                counter++;
+                            }                            
                             headers = true;
                         }
                     }
@@ -222,6 +271,10 @@ namespace DiscordBotGuardian
                                 {
                                     person.Event = list;
                                 }
+                                else if (type == "Team")
+                                {
+                                    person.Team = list;
+                                }
                                 updated = true;
                                 userinfo = person;
                                 break;
@@ -246,12 +299,67 @@ namespace DiscordBotGuardian
                 SpreadsheetsResource.ValuesResource.GetRequest request = service.Spreadsheets.Values.Get(spreadsheetId, range);
                 ValueRange response = request.Execute();
                 IList<IList<Object>> values = response.Values;
+                int counter = 0;
+                int rtusernamec = 0;
+                int teamc = 0;
+                int phoneendpointc = 0;
+                int authenticatedc = 0;
+                int discordusernamec = 0;
+                int rolesc = 0;
+                int smsc = 0;
+                int channelsc = 0;
+                int eventnamec = 0;
+
                 int rownumber = 1;
+ 
                 if (values != null && values.Count > 0)
                 {
                     foreach (var row in values)
                     {
-                        if (row[0].ToString() == user.RTUsername)
+                        foreach (var headerrow in row)
+                        {
+                            if (headerrow.ToString().ToLower().Trim() == "rtusername")
+                            {
+                                rtusernamec = counter;
+                            }
+                            else if (headerrow.ToString().ToLower().Trim() == "team")
+                            {
+                                teamc = counter;
+                            }
+                            else if (headerrow.ToString().ToLower().Trim() == "phoneendpoint")
+                            {
+                                phoneendpointc = counter;
+                            }
+                            else if (headerrow.ToString().ToLower().Trim() == "authenticated")
+                            {
+                                authenticatedc = counter;
+                            }
+                            else if (headerrow.ToString().ToLower().Trim() == "discordusername")
+                            {
+                                discordusernamec = counter;
+                            }
+                            else if (headerrow.ToString().ToLower().Trim() == "roles")
+                            {
+                                rolesc = counter;
+                            }
+                            else if (headerrow.ToString().ToLower().Trim() == "sms")
+                            {
+                                smsc = counter;
+                            }
+                            else if (headerrow.ToString().ToLower().Trim() == "channels")
+                            {
+                                channelsc = counter;
+                            }
+                            else if (headerrow.ToString().ToLower().Trim() == "event")
+                            {
+                                eventnamec = counter;
+                            }
+                            counter++;
+                        }
+                    }
+                    foreach (var row in values)
+                    {
+                        if (row[rtusernamec].ToString() == user.RTUsername)
                         {
                             break;
                         }
@@ -275,7 +383,7 @@ namespace DiscordBotGuardian
                 }
                 else
                 {
-                    team = user.Team;
+                    team = string.Join(",", user.Team);
                 }
                 string phoneendpoint;
                 if (user.PhoneEndpoint == null)
@@ -313,9 +421,23 @@ namespace DiscordBotGuardian
                 {
                     events = string.Join(",", user.Event);
                 }
-                var oblist = new List<object>() { user.RTUsername, team, phoneendpoint, user.Authenticated.ToString(), user.DiscordUsername, roles, user.SMS.ToString(), channels, events };
+
+                Dictionary<int, string> array = new Dictionary<int, string>
+                {
+                    [rtusernamec] = user.RTUsername,
+                    [teamc] = team,
+                    [phoneendpointc] = phoneendpoint,
+                    [authenticatedc] = user.Authenticated.ToString(),
+                    [discordusernamec] = user.DiscordUsername,
+                    [rolesc] = roles,
+                    [smsc] = user.SMS.ToString(),
+                    [channelsc] = channels,
+                    [eventnamec] = events
+                };
+                var oblist = new List<object>() { array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8] };
                 requestBody.Values = new List<IList<object>> { oblist };
                 UpdateValuesResponse response2 = request2.Execute();
+
                 return true;
             }
             catch

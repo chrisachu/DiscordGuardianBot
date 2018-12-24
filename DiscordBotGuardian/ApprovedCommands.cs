@@ -289,6 +289,32 @@ namespace DiscordBotGuardian
                     {
                         // Read the DB and update the user list
                         users = Database.ReadDB(users);
+
+                        foreach(var user in users)
+                        {
+                            if(user.Team != null)
+                            {
+                                if(user.Team.Count > 0)
+                                {
+                                    List<string> roles = new List<string>();
+                                    foreach (var team in user.Team)
+                                    {
+                                        roles.Add(team);
+                                        // Actually assign the new role
+                                        await SentDiscordCommands.RoleTask(context, team);
+
+                                    }
+                                    foreach(var role in user.Roles)
+                                    {
+                                        roles.Add(role);
+                                    }
+                                    // Update the users DB to contain the new role
+                                    users = Database.UpdateUser(user.DiscordUsername, "Roles", "", users, roles);
+                                    users = Database.UpdateUser(user.DiscordUsername, "Team", "", users, null);
+                                }
+                            }
+                        }
+
                         // Notify the user the DB reload has completed
                         await message.Channel.SendMessageAsync(message.Author.Mention + " The DB has been reloaded");
                     }
