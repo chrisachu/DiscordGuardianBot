@@ -415,7 +415,104 @@ namespace DiscordBotGuardian
                 // If the command is to update a squad lead
                 else if (splitmessage[0].ToLower() == "!squadlead")
                 {
-                    // ToDo: Add team lead command that parses the TL role and year and allows them to add leads
+                    if (Validation.IsTLAsync(context, message).Result)
+                    {
+                        // Make sure we have all parts
+                        if (splitmessage.Count == 4)
+                        {
+                            var parsedmessage = message.Content.Split('"').Select((element, index) => index % 2 == 0 ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) : new string[] { element }).SelectMany(element => element).ToList();
+                            if (parsedmessage[1].Contains("@") == true)
+                            {
+                                if (Validation.IsTLForYearAsync(context, message, parsedmessage[2].ToLower().Trim(), parsedmessage[3].ToLower().Trim()).Result)
+                                {
+                                    var info = await context.Guild.GetUserAsync(message.Author.Id);
+                                    bool found = false;
+                                    foreach (var role in info.RoleIds)
+                                    {
+                                        if (found == false)
+                                        {
+                                            foreach (var rolename in context.Guild.Roles)
+                                            {
+                                                if (role == rolename.Id && rolename.Name.ToLower().Trim() == "center-stage-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim())
+                                                {
+                                                    foreach (var mention in message.MentionedUsers)
+                                                    {
+                                                        await SentDiscordCommands.SquadTask(context, "Lead-CS-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim(), mention.Id);
+                                                        await message.Channel.SendMessageAsync(message.Author.Mention + " User has been added as a squad lead");
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                                else if (role == rolename.Id && rolename.Name.ToLower().Trim() == "registration-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim())
+                                                {
+                                                    foreach (var mention in message.MentionedUsers)
+                                                    {
+                                                        await SentDiscordCommands.SquadTask(context, "Lead-RG-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim(), mention.Id);
+                                                        await message.Channel.SendMessageAsync(message.Author.Mention + " User has been added as a squad lead");
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                                else if (role == rolename.Id && rolename.Name.ToLower().Trim() == "response-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim())
+                                                {
+                                                    foreach (var mention in message.MentionedUsers)
+                                                    {
+                                                        await SentDiscordCommands.SquadTask(context, "Lead-RS-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim(), mention.Id);
+                                                        await message.Channel.SendMessageAsync(message.Author.Mention + " User has been added as a squad lead");
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                                else if (role == rolename.Id && rolename.Name.ToLower().Trim() == "signatures-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim())
+                                                {
+                                                    foreach (var mention in message.MentionedUsers)
+                                                    {
+                                                        await SentDiscordCommands.SquadTask(context, "Lead-SG-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim(), mention.Id);
+                                                        await message.Channel.SendMessageAsync(message.Author.Mention + " User has been added as a squad lead");
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                                else if (role == rolename.Id && rolename.Name.ToLower().Trim() == "special-rooms-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim())
+                                                {
+                                                    foreach (var mention in message.MentionedUsers)
+                                                    {
+                                                        await SentDiscordCommands.SquadTask(context, "Lead-SR-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim(), mention.Id);
+                                                        await message.Channel.SendMessageAsync(message.Author.Mention + " User has been added as a squad lead");
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                                else if (role == rolename.Id && rolename.Name.ToLower().Trim() == "happy-hour-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim())
+                                                {
+                                                    foreach (var mention in message.MentionedUsers)
+                                                    {
+                                                        await SentDiscordCommands.SquadTask(context, "Lead-HH-" + parsedmessage[2].ToLower().Trim() + "-" + parsedmessage[3].ToLower().Trim(), mention.Id);
+                                                        await message.Channel.SendMessageAsync(message.Author.Mention + " User has been added as a squad lead");
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                await message.Channel.SendMessageAsync(message.Author.Mention + " You need to @mention a user.");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Warn the user they dont have perms
+                        await message.Channel.SendMessageAsync(message.Author.Mention + " You need to be a team lead to run this command.");
+                    }
                     return true;
                 }
             }

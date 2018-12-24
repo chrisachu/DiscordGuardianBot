@@ -18,12 +18,12 @@ namespace DiscordBotGuardian
             /// Create Roles
             /// 
             // Global Roles
-            await CreateRole(Context, "Admin", "Admin", Color.Purple, true);
-            await CreateRole(Context, "Head-Guardian", "Admin", Color.Red, true);
-            await CreateRole(Context, "Head-Guardian-" + Event + "-" + Year, "Admin", Color.Red, false);
-            await CreateRole(Context, "Staff", "Mod", Color.Magenta, true);
-            await CreateRole(Context, "Team-Lead", "Display", Color.Blue, true);
-            await CreateRole(Context, "Mod", "Mod", Color.LightOrange, true);
+            await CreateRole(Context, "Admin", "Admin", Color.Purple, true, 1);
+            await CreateRole(Context, "Head-Guardian", "Admin", Color.Red, true,2);
+            await CreateRole(Context, "Head-Guardian-" + Event + "-" + Year, "Admin", Color.Red, false,3);
+            await CreateRole(Context, "Staff", "Mod", Color.Magenta, true,4);
+            await CreateRole(Context, "Team-Lead", "Display", Color.Blue, true,5);
+            await CreateRole(Context, "Mod", "Mod", Color.LightOrange, true,6);
 
             // Team Related Roles
             await CreateRole(Context, "Team-Lead-" + Event + "-" + Year, "Mod", Color.Default, false);
@@ -347,7 +347,7 @@ And now for The Rules:
 4.  Do not share this Discord with non-Guardians. This is our private fun place.
 5.  Some Teams have Squad chats. Please use your assigned squad chat only. Do not go into other squad chats.
 
-Once you understand these rules, go back to #landing and type '!rt RT - Site - Username' to be given access to all of the fun. Thank you for being an important part of the RTX experience!
+Once you understand these rules, go back to #landing and type '!rt RT-Site-Username' to be given access to all of the fun. Thank you for being an important part of the RTX experience!
 -------------------");
                 }
             }
@@ -677,7 +677,7 @@ Once you understand these rules, go back to #landing and type '!rt RT - Site - U
         /// Used for creating a discord role in the current guild
         /// Allowed Perms are Admin, Mod, Standard and Display
         /// </summary>
-        private async Task CreateRole(CommandContext Context, string Role, string Perms, Color RoleColor, bool DisplayedRole)
+        private async Task CreateRole(CommandContext Context, string Role, string Perms, Color RoleColor, bool DisplayedRole, [Optional]int? Position)
         {
             // Before we go any further let's see if the role already exists
 
@@ -699,12 +699,19 @@ Once you understand these rules, go back to #landing and type '!rt RT - Site - U
                 }
             }
 
-            // ToDo: Set Role Position
             // Actually create the role using the provided settings
-            await Context.Guild.CreateRoleAsync(Role, roleperms, RoleColor, DisplayedRole);
+            var role = await Context.Guild.CreateRoleAsync(Role, roleperms, RoleColor, DisplayedRole);
 
             // Pause after role creation
             await Task.Delay(200);
+            if (Position != null)
+            {
+                await role.ModifyAsync(x =>
+                {
+                    x.Position = Position.Value;
+                });
+            }
+         
         }
 
     }

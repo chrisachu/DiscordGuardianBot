@@ -125,7 +125,6 @@ namespace DiscordBotGuardian
                                 }
                                 if (row[1].ToString() != "NULL")
                                 {
-                                    // ToDo: Edit this so when team roles are updated we clear this back out
                                     newuser[newuserrow].Team = row[1].ToString();
                                 }
                                 if (row[2].ToString() != "NULL")

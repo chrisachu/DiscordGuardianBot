@@ -161,5 +161,67 @@ namespace DiscordBotGuardian
             }
             catch { return false; }
         }
+        /// <summary>
+        /// Check against the list of roles in the Server if the user is a TL
+        /// </summary>
+        public static async System.Threading.Tasks.Task<bool> IsTLAsync(CommandContext Context, SocketMessage User)
+        {
+            try
+            {
+                // Get the users info
+                var userinfo = await Context.Guild.GetUserAsync(User.Author.Id) as IGuildUser;
+                // Check all the roles in the discord
+                foreach (var role in Context.Guild.Roles)
+                {
+                    // If the role matches either option
+                    if (role.Name.ToLower().Trim().Contains("team-lead-"))
+                    {
+                        // Check the role against all of the ID's the user has
+                        foreach (var userrole in userinfo.RoleIds)
+                        {
+                            // If it matches return true
+                            if (role.Id == userrole)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                // Else just return false
+                return false;
+            }
+            catch { return false; }
+        }
+        /// <summary>
+        /// Returns what team a user is on
+        /// </summary>
+        public static async System.Threading.Tasks.Task<bool> IsTLForYearAsync(CommandContext Context, SocketMessage User, string Eventname, string Year)
+        {
+            try
+            {
+                // Get the users info
+                var userinfo = await Context.Guild.GetUserAsync(User.Author.Id) as IGuildUser;
+                // Check all the roles in the discord
+                foreach (var role in Context.Guild.Roles)
+                {
+                    // If the role matches either option
+                    if (role.Name.ToLower().Trim() == "team-lead-" + Eventname.ToLower() + "-" + Year.ToLower())
+                    {
+                        // Check the role against all of the ID's the user has
+                        foreach (var userrole in userinfo.RoleIds)
+                        {
+                            // If it matches return true
+                            if (role.Id == userrole)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                // Else just return
+                return false;
+            }
+            catch { return false; }
+        }
     }
 }

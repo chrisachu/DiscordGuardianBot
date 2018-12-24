@@ -127,7 +127,11 @@ namespace DiscordBotGuardian
             // The bot should never respond to itself.
             if (message.Author.Id == _client.CurrentUser.Id)
                 return;
-
+            await Task.Run(() => ReadmessagesAsync(message));
+  
+        }
+        public async void ReadmessagesAsync(SocketMessage message)
+        {          
             // Set up the Socket User Message so we can use it for context for later
             var usermessage = message as SocketUserMessage;
             // Double check the message is not empty
@@ -142,7 +146,7 @@ namespace DiscordBotGuardian
                     // Set up Command Context
                     var context = new CommandContext(_client, usermessage);
                     // Check if the message sent matches an actual command in the approved or public commands lists
-                    if (await PublicCommands.ParsePublicCommandsAsync(message, users, context) == false && await ApprovedCommands.ParsePrivateCommandsAsync(message,users,client,context,mailaccount) == false)
+                    if (await PublicCommands.ParsePublicCommandsAsync(message, users, context) == false && await ApprovedCommands.ParsePrivateCommandsAsync(message, users, client, context, mailaccount) == false)
                     {
                         // If it dosen't match just send a text message of the info
                         Sendtext(message.Content, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
@@ -152,15 +156,26 @@ namespace DiscordBotGuardian
                 // Check if there were any mentions
                 else if (message.MentionedUsers.Count > 0)
                 {
+                    bool found = false;
                     // Check if the user mentioned the bot
                     foreach (var mention in message.MentionedUsers)
                     {
-                        if(mention.Id == _client.CurrentUser.Id)
+                        if (mention.Id == _client.CurrentUser.Id)
                         {
                             // If so send a gif
                             await message.Channel.SendMessageAsync(Angela.RandomAngela());
+                            found = true;
                             break;
                         }
+                    }
+                    if (found == false)
+                    {
+                        string rebuiltstring = message.Content;
+                        foreach (var mention in message.MentionedUsers)
+                        {
+                            rebuiltstring = rebuiltstring.Replace("<@" + mention.Id + ">", "@" + (mention as SocketGuildUser).Nickname);
+                        }
+                        Sendtext(rebuiltstring, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
                     }
                 }
                 // If its not just send a text message
@@ -169,8 +184,8 @@ namespace DiscordBotGuardian
                     Sendtext(message.Content, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
                 }
             }
-        }
 
+        }
         /// <summary>
         /// Write a string to the log file
         /// </summary>
