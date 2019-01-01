@@ -17,40 +17,53 @@ namespace DiscordBotGuardian
         {
             /// Create Roles
             /// 
-            // Global Roles
-            await CreateRole(Context, "Admin", "Admin", Color.Purple, true, 1);
-            await CreateRole(Context, "Head-Guardian", "Admin", Color.Red, true,2);
-            await CreateRole(Context, "Head-Guardian-" + Event + "-" + Year, "Admin", Color.Red, false,3);
-            await CreateRole(Context, "Staff", "Mod", Color.Magenta, true,4);
-            await CreateRole(Context, "Team-Lead", "Display", Color.Blue, true,5);
-            await CreateRole(Context, "Mod", "Mod", Color.LightOrange, true,6);
+            // Actual Event Role
+            await CreateRole(Context, "Guardian-" + Event + "-" + Year, "Standard", Color.Green, true, 1);
 
             // Team Related Roles
-            await CreateRole(Context, "Team-Lead-" + Event + "-" + Year, "Mod", Color.Default, false);
-            await CreateRole(Context, "Crisis-Management-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Center-Stage-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Lead-CS-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Dispatch-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Expo-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Freelancer-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "PA-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "PAL-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Panels-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Registration-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Lead-RG-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Reponse-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Lead-RS-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Signatures-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Lead-SG-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Special-Rooms-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Lead-SR-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Store-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Tech-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Happy-Hour-" + Event + "-" + Year, "Standard", Color.Default, false);
-            await CreateRole(Context, "Lead-HH-" + Event + "-" + Year, "Standard", Color.Default, false);
+            await CreateRole(Context, "Crisis-Management-" + Event + "-" + Year, "Standard", Color.Default, false,2);
+            await CreateRole(Context, "Center-Stage-" + Event + "-" + Year, "Standard", Color.Default, false,3);
+            await CreateRole(Context, "Lead-CS-" + Event + "-" + Year, "Standard", Color.Default, false,4);
+            await CreateRole(Context, "Dispatch-" + Event + "-" + Year, "Standard", Color.Default, false,5);
+            await CreateRole(Context, "Expo-" + Event + "-" + Year, "Standard", Color.Default, false,6);
+            await CreateRole(Context, "Freelancer-" + Event + "-" + Year, "Standard", Color.Default, false,7);
+            await CreateRole(Context, "PA-" + Event + "-" + Year, "Standard", Color.Default, false,8);
+            await CreateRole(Context, "PAL-" + Event + "-" + Year, "Standard", Color.Default, false,9);
+            await CreateRole(Context, "Panels-" + Event + "-" + Year, "Standard", Color.Default, false,10);
+            await CreateRole(Context, "Registration-" + Event + "-" + Year, "Standard", Color.Default, false,11);
+            await CreateRole(Context, "Lead-RG-" + Event + "-" + Year, "Standard", Color.Default, false,12);
+            await CreateRole(Context, "Reponse-" + Event + "-" + Year, "Standard", Color.Default, false,13);
+            await CreateRole(Context, "Lead-RS-" + Event + "-" + Year, "Standard", Color.Default, false,14);
+            await CreateRole(Context, "Signatures-" + Event + "-" + Year, "Standard", Color.Default, false,15);
+            await CreateRole(Context, "Lead-SG-" + Event + "-" + Year, "Standard", Color.Default, false,16);
+            await CreateRole(Context, "Special-Rooms-" + Event + "-" + Year, "Standard", Color.Default, false,17);
+            await CreateRole(Context, "Lead-SR-" + Event + "-" + Year, "Standard", Color.Default, false,18);
+            await CreateRole(Context, "Store-" + Event + "-" + Year, "Standard", Color.Default, false,19);
+            await CreateRole(Context, "Tech-" + Event + "-" + Year, "Standard", Color.Default, false,20);
+            await CreateRole(Context, "Happy-Hour-" + Event + "-" + Year, "Standard", Color.Default, false,21);
+            await CreateRole(Context, "Lead-HH-" + Event + "-" + Year, "Standard", Color.Default, false,22);
+            await CreateRole(Context, "Team-Lead-" + Event + "-" + Year, "Mod", Color.Default, false, 23);
 
-            // Actual Event Role
-            await CreateRole(Context, "Guardian-" + Event + "-" + Year, "Standard", Color.Green, true);
+            // Global Roles
+            if (Context.Guild.Roles.Count < 30)
+            {
+                await CreateRole(Context, "Mod", "Mod", Color.LightOrange, true, 24);
+                await CreateRole(Context, "Team-Lead", "Display", Color.Blue, true, 25);
+                await CreateRole(Context, "Staff", "Mod", Color.Magenta, true, 26);
+                await CreateRole(Context, "Head-Guardian-" + Event + "-" + Year, "Admin", Color.Red, false, 27);
+                await CreateRole(Context, "Head-Guardian", "Admin", Color.Red, true, 28);
+                await CreateRole(Context, "Admin", "Admin", Color.Purple, true, 29);
+            }
+            else
+            {
+                await CreateRole(Context, "Mod", "Mod", Color.LightOrange, true, Context.Guild.Roles.Count - 6);
+                await CreateRole(Context, "Team-Lead", "Display", Color.Blue, true, Context.Guild.Roles.Count - 5);
+                await CreateRole(Context, "Staff", "Mod", Color.Magenta, true, Context.Guild.Roles.Count - 4);
+                await CreateRole(Context, "Head-Guardian-" + Event + "-" + Year, "Admin", Color.Red, false, Context.Guild.Roles.Count - 3);
+                await CreateRole(Context, "Head-Guardian", "Admin", Color.Red, true, Context.Guild.Roles.Count - 2);
+                await CreateRole(Context, "Admin", "Admin", Color.Purple, true, Context.Guild.Roles.Count - 1);
+            }
+
         }
         /// <summary>
         /// Used for generating a new set of Categories
@@ -85,7 +98,7 @@ namespace DiscordBotGuardian
             foreach (Discord.IRole existingrole in Context.Guild.Roles)
             {
                 // Compare the list of roles in the discord with the Role
-                if (existingrole.Name.Contains("Guardian-"))
+                if (existingrole.Name.Contains("Guardian-") && existingrole.Name.Contains("Head-Guardian-") == false)
                 {
                     GuardianEventsReadOnly.Add(new RolePermissions { Role = existingrole.Name, ChannelPermType = RolePermissions.ChannelPermissions("readonly") });
                 }
@@ -133,14 +146,20 @@ namespace DiscordBotGuardian
             /// 
             // Generate list
             List<RolePermissions> GuardianEventsStandard = new List<RolePermissions>();
+            List<ReorderRoleProperties> reorder = new List<ReorderRoleProperties>();
             foreach (Discord.IRole existingrole in Context.Guild.Roles)
             {
+                System.Console.WriteLine(existingrole.Position + "-"+ existingrole.Name);
                 // Compare the list of roles in the discord with the Role
-                if (existingrole.Name.Contains("Guardian-"))
+                if (existingrole.Name.Contains("Guardian-") && existingrole.Name.Contains("Head-Guardian-") == false)
                 {
                     GuardianEventsStandard.Add(new RolePermissions { Role = existingrole.Name, ChannelPermType = RolePermissions.ChannelPermissions("standard") });
+                   reorder.Add(new ReorderRoleProperties(id: existingrole.Id, pos: 0));
+                    // ToDo: Reorder not working
                 }
             }
+            await Context.Guild.ReorderRolesAsync(reorder);
+
             // Add the event we are adding
             GuardianEventsStandard.Add(new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("standard") });
             // Add default roles
@@ -157,7 +176,7 @@ namespace DiscordBotGuardian
                 // Compare the list of roles in the discord with the Role
                 if (existingrole.Name.Contains("Guardian-"))
                 {
-                    GuardianEventsReadOnly.Add(new RolePermissions { Role = existingrole.Name, ChannelPermType = RolePermissions.ChannelPermissions("readonly") });
+                    GuardianEventsReadOnly.Add(new RolePermissions { Role = existingrole.Name, ChannelPermType = RolePermissions.ChannelPermissions("readonly") });                     
                 }
             }
             // Add the event we are adding
@@ -331,7 +350,7 @@ Administration is where everyone starts. Here, we have our rulebook that everyon
 
 Global is where you can fly across the pond and chat with Guardians from other events (RTX London, RTX Austin, etc.). Most of the social channels live here as well. 
 
-Region Locked are the channels for each specific RTX event. Each team will have their own version of the following:
+Event Location hosts the channels specific to each RTX event. Each event will have its own version of the following:
 
 Command-Center: Announcements and links for your RTX Event.
 
@@ -347,8 +366,7 @@ And now for The Rules:
 4.  Do not share this Discord with non-Guardians. This is our private fun place.
 5.  Some Teams have Squad chats. Please use your assigned squad chat only. Do not go into other squad chats.
 
-Once you understand these rules, go back to #landing and type '!rt RT-Site-Username' to be given access to all of the fun. Thank you for being an important part of the RTX experience!
--------------------");
+Once you understand these rules, go back to #landing and type '!rt RT-Site-Username' to be given access to all of the fun. Thank you for being an important part of the RTX experience!");
                 }
             }
             return;
@@ -703,7 +721,7 @@ Once you understand these rules, go back to #landing and type '!rt RT-Site-Usern
             var role = await Context.Guild.CreateRoleAsync(Role, roleperms, RoleColor, DisplayedRole);
 
             // Pause after role creation
-            await Task.Delay(200);
+            await Task.Delay(1000);
             if (Position != null)
             {
                 await role.ModifyAsync(x =>

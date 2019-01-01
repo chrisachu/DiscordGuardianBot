@@ -235,7 +235,7 @@ namespace DiscordBotGuardian
                 {
                     if (type == "DiscordUsername")
                     {
-                        if (person.RTUsername == user)
+                        if (person.RTUsername.ToLower() == user.ToLower())
                         {
                             person.DiscordUsername = value;
                             break;

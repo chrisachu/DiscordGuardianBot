@@ -23,6 +23,8 @@ namespace DiscordBotGuardian
         private static MailAddress mailaccount;
         // Holds userdata for the Sheets DB
         private static List<UserData> users = new List<UserData>();
+ 
+        // ToDo: SMS enable event annoucnments as a default channel
 
         /// <summary>
         /// Entry way to start the net core application
@@ -79,7 +81,7 @@ namespace DiscordBotGuardian
             {
                 UseDefaultCredentials = false,
                 EnableSsl = true,
-                Port = 587,
+                Port = 2525,
                 Credentials = new NetworkCredential(creds.SMTPUsername, creds.SMTPPassword)
             };
             mailaccount = new MailAddress(creds.SMTPEmail);

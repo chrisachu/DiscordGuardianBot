@@ -242,31 +242,12 @@ namespace DiscordBotGuardian
 
                             // Set up the task to run it
                             NewYear newyeartask = new NewYear();
-                            // Start multiple threads to generate the events
-                            // Roles
-                            new Thread(async () =>
-                            {
-                                Thread.CurrentThread.IsBackground = true;
                                 await newyeartask.GenerateRolesAsync(context, parsedmessage[1], Convert.ToInt32(parsedmessage[2]));
-
-                            }).Start();
-                            // Make sure we wait so parts can generate before the next starts
-                            await Task.Delay(15000);
-                            // Categories
-                            new Thread(async () =>
-                            {
-                                Thread.CurrentThread.IsBackground = true;
+                           
                                 await newyeartask.GenerateCategoriesAsync(context, parsedmessage[1], Convert.ToInt32(parsedmessage[2]));
 
-                            }).Start();
-                            await Task.Delay(5000);
-                            // Channels
-                            new Thread(async () =>
-                            {
-                                Thread.CurrentThread.IsBackground = true;
                                 await newyeartask.GenerateChannelsAsync(context, parsedmessage[1], Convert.ToInt32(parsedmessage[2]));
-
-                            }).Start();
+ 
                         }
                         else
                         {

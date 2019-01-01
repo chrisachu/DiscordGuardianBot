@@ -68,6 +68,7 @@ namespace DiscordBotGuardian
                         // Find that the user has not been authenticated yet
                         if (user.RTUsername.ToLower().Trim() == message.Content.Split()[1].ToLower().Trim() && found == true)
                         {
+
                             // Update the user info in the Sheets DB
                             if (updateonly == false)
                             {
@@ -84,6 +85,8 @@ namespace DiscordBotGuardian
                                     foreach (string role in user.Roles)
                                     {
                                         roles.Add(role);
+                                        // Actually assign the old roles
+                                        await SentDiscordCommands.RoleTask(context, role);
                                     }
                                 }
                             }
