@@ -47,7 +47,15 @@ namespace DiscordBotGuardian
         /// </summary>
         public List<string> Channels { get; set; }
 
+        /// <summary>
+        /// Events the user is Reg'd for
+        /// </summary>
         public List<string> Event { get; set; }
+
+        /// <summary>
+        /// Stores the auth code
+        /// </summary>
+        public string AuthCode { get; set; }
     }
 
 }

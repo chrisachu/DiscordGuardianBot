@@ -15,7 +15,7 @@ namespace DiscordBotGuardian
         /// <summary>
         /// Task for command parsing that only authenticated users can run
         /// </summary>
-        public static async System.Threading.Tasks.Task<bool> ParsePrivateCommandsAsync(SocketMessage message, List<UserData> users, SmtpClient client, CommandContext context, MailAddress mailaccount)
+        public static async System.Threading.Tasks.Task<bool> ParsePrivateCommandsAsync(SocketMessage message, List<UserData> users, SmtpClient client, CommandContext context, MailAddress mailaccount, bool SMSDisabled)
         {
             // Split the message so we can parse it
             List<string> splitmessage = message.Content.Split().ToList();
@@ -23,7 +23,7 @@ namespace DiscordBotGuardian
             if (Validation.IsUserAuthenticated(message.Author.Id.ToString(), users) == true)
             {
                 // Check if the command is for registering their phone
-                if (splitmessage[0].ToLower() == "!registerphone")
+                if (splitmessage[0].ToLower() == "!registerphone" && SMSDisabled == false)
                 {
                     if (message.Channel is SocketDMChannel)
                     {
@@ -124,7 +124,7 @@ namespace DiscordBotGuardian
                     return true;
                 }
                 // If the command sent is notify
-                else if (splitmessage[0].ToLower() == "!notify")
+                else if (splitmessage[0].ToLower() == "!notify" && SMSDisabled == false)
                 {
                     // Check every user in the userdatabase
                     foreach (UserData person in users)
@@ -173,7 +173,7 @@ namespace DiscordBotGuardian
                     return true;
                 }
                 // If the message sent was SMS
-                else if (splitmessage[0].ToLower() == "!sms")
+                else if (splitmessage[0].ToLower() == "!sms" && SMSDisabled == false)
                 {
                     // Check every user in the DB to see if it matches the sending user
                     foreach (UserData person in users)

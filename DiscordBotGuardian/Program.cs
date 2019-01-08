@@ -23,8 +23,9 @@ namespace DiscordBotGuardian
         private static MailAddress mailaccount;
         // Holds userdata for the Sheets DB
         private static List<UserData> users = new List<UserData>();
- 
-        // ToDo: SMS enable event annoucnments as a default channel
+
+        // Used for enabling or disabling SMS THIS IS HARD CODED
+        public bool SMSDisabled = true;
 
         /// <summary>
         /// Entry way to start the net core application
@@ -59,33 +60,38 @@ namespace DiscordBotGuardian
                 Console.ReadKey();
                 Environment.Exit(1);
             }
-            // Check if google sheets creds file exists
-            if (File.Exists(curDir + "/credentials.json") == false)
+            if (SMSDisabled == false)
             {
-                Console.WriteLine("No Google Sheets Credentials file detected (Go download your creds from Google). Press any button to quit");
-                Console.ReadKey();
-                Environment.Exit(1);
-            }
-            // Check if the email2sms.info json file exists
-            if (File.Exists(curDir + "/sms.json") == false)
-            {
-                Console.WriteLine("No SMS DB detected (You must download this from email2sms.info). Press any button to quit");
-                Console.ReadKey();
-                Environment.Exit(1);
+                // Check if google sheets creds file exists
+                if (File.Exists(curDir + "/credentials.json") == false)
+                {
+                    Console.WriteLine("No Google Sheets Credentials file detected (Go download your creds from Google). Press any button to quit");
+                    Console.ReadKey();
+                    Environment.Exit(1);
+                }
+                // Check if the email2sms.info json file exists
+                if (File.Exists(curDir + "/sms.json") == false)
+                {
+                    Console.WriteLine("No SMS DB detected (You must download this from email2sms.info). Press any button to quit");
+                    Console.ReadKey();
+                    Environment.Exit(1);
+                }
             }
             // Assuming everything exists load in the json file
             string credsfile = File.ReadAllText(curDir + "/botsettings.json");
             Credentials creds = JsonConvert.DeserializeObject<Credentials>(credsfile);
-            // After parsing, set up the SMTP client for text message
-            client = new SmtpClient(creds.SMTPEndpoint)
+            if (SMSDisabled == false)
             {
-                UseDefaultCredentials = false,
-                EnableSsl = true,
-                Port = 2525,
-                Credentials = new NetworkCredential(creds.SMTPUsername, creds.SMTPPassword)
-            };
-            mailaccount = new MailAddress(creds.SMTPEmail);
-
+                // After parsing, set up the SMTP client for text message
+                client = new SmtpClient(creds.SMTPEndpoint)
+                {
+                    UseDefaultCredentials = false,
+                    EnableSsl = true,
+                    Port = 2525,
+                    Credentials = new NetworkCredential(creds.SMTPUsername, creds.SMTPPassword)
+                };
+                mailaccount = new MailAddress(creds.SMTPEmail);
+            }
             // Load the Database from google sheets
             users = Database.ReadDB(users);
 
@@ -147,11 +153,14 @@ namespace DiscordBotGuardian
                 {
                     // Set up Command Context
                     var context = new CommandContext(_client, usermessage);
-                    // Check if the message sent matches an actual command in the approved or public commands lists
-                    if (await PublicCommands.ParsePublicCommandsAsync(message, users, context) == false && await ApprovedCommands.ParsePrivateCommandsAsync(message, users, client, context, mailaccount) == false)
+                    // Check if the message sent matches an actual command in the approved or public commands 
+                    if (await PublicCommands.ParsePublicCommandsAsync(message, users, context, SMSDisabled) == false && await ApprovedCommands.ParsePrivateCommandsAsync(message, users, client, context, mailaccount, SMSDisabled) == false)
                     {
-                        // If it dosen't match just send a text message of the info
-                        Sendtext(message.Content, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
+                        if (SMSDisabled == false)
+                        {
+                            // If it dosen't match just send a text message of the info
+                            Sendtext(message.Content, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
+                        }
                     }
 
                 }
@@ -177,13 +186,19 @@ namespace DiscordBotGuardian
                         {
                             rebuiltstring = rebuiltstring.Replace("<@" + mention.Id + ">", "@" + (mention as SocketGuildUser).Nickname);
                         }
-                        Sendtext(rebuiltstring, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
+                        if (SMSDisabled == false)
+                        {
+                            Sendtext(rebuiltstring, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
+                        }
                     }
                 }
                 // If its not just send a text message
                 else
                 {
-                    Sendtext(message.Content, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
+                    if (SMSDisabled == false)
+                    {
+                        Sendtext(message.Content, message.Author.Username.ToString().ToLower(), message.Channel.Name, message.Author.Id.ToString().ToLower());
+                    }
                 }
             }
 

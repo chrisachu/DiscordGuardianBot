@@ -12,7 +12,7 @@ namespace DiscordBotGuardian
         /// <summary>
         /// Task for commands that everyone can run, not just authenticated users
         /// </summary>
-        public static async System.Threading.Tasks.Task<bool> ParsePublicCommandsAsync(SocketMessage message, List<UserData> users, CommandContext context)
+        public static async System.Threading.Tasks.Task<bool> ParsePublicCommandsAsync(SocketMessage message, List<UserData> users, CommandContext context, bool SMSDisabled)
         {
             // Split the message per word so we can parse it
             List<string> splitmessage = message.Content.Split().ToList();
@@ -20,7 +20,7 @@ namespace DiscordBotGuardian
             if (splitmessage[0].ToLower() == "!rt" && message.Channel.Name == "landing")
             {
                 // Check that the amount of words is correct
-                if (splitmessage.Count == 2)
+                if (splitmessage.Count == 2 || splitmessage.Count == 3)
                 {
                     bool found = false;
                     bool updateonly = false;
@@ -28,18 +28,32 @@ namespace DiscordBotGuardian
                     foreach (UserData user in users)
                     {
                         // Keep looping on false if it dosent match the author
-                        if ( user.RTUsername.ToLower().Trim() == message.Content.Split()[1].ToLower())
+                        if (user.RTUsername.ToLower().Trim() == message.Content.Split()[1].ToLower())
                         {
                             if (user.Event != null)
                             {
                                 if (user.Event.Count != 0)
                                 {
-                                    if(user.DiscordUsername == null)
+                                    if (user.DiscordUsername == null)
                                     {
-                                        found = true;
-                                        updateonly = false;
+                                        if (user.AuthCode != null)
+                                        {
+                                            if (splitmessage[2].ToLower().Trim() == user.AuthCode.ToLower().Trim())
+                                            {
+                                                found = true;
+                                                updateonly = false;
+                                            }
+                                            else
+                                            {
+                                                found = false;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            found = false;
+                                        }
                                     }
-                                    else if(user.DiscordUsername != null)
+                                    else if (user.DiscordUsername != null)
                                     {
                                         if (user.DiscordUsername == message.Author.Id.ToString().ToLower())
                                         {
@@ -68,12 +82,12 @@ namespace DiscordBotGuardian
                         // Find that the user has not been authenticated yet
                         if (user.RTUsername.ToLower().Trim() == message.Content.Split()[1].ToLower().Trim() && found == true)
                         {
-
                             // Update the user info in the Sheets DB
                             if (updateonly == false)
                             {
                                 users = Database.UpdateUser(message.Content.Split()[1].ToLower(), "DiscordUsername", message.Author.Id.ToString().ToLower(), users);
                                 users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "Authenticated", "TRUE", users);
+                                users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "AuthCode", "NULL", users);
                             }
                             // Generate list of roles based off what the user has in the DB
                             List<string> roles = new List<string>();
@@ -110,7 +124,7 @@ namespace DiscordBotGuardian
                                             updateduser = true;
                                         }
                                     }
-                                    if(updateduser == true)
+                                    if (updateduser == true)
                                     {
                                         // Update the variable
                                         foreach (var eventstring in events)
@@ -145,7 +159,7 @@ namespace DiscordBotGuardian
                     else
                     {
                         await SentDiscordCommands.DeleteLastMessage(context, "landing");
-                        await message.Channel.SendMessageAsync(message.Author.Mention + " Your RT Username is already authenticated as another user or you are not registered as a Guardian. Contact a HG or an Admin if you think this is incorrect.");
+                        await message.Channel.SendMessageAsync(message.Author.Mention + " Your RT Username is already authenticated as another user or you are not registered as a Guardian. Your auth code may also be incorrect. Contact a HG or an Admin if you think this is incorrect.");
                     }
                     return true;
                 }
@@ -156,12 +170,19 @@ namespace DiscordBotGuardian
                 // If its in landing only show them !rt so they dont have too much going on
                 if (message.Channel.Name == "landing")
                 {
-                    await message.Channel.SendMessageAsync("The commands available are, " + Environment.NewLine + "!rt USERNAME - to log in to be authenticated and accept the TOS");
+                    await message.Channel.SendMessageAsync("The commands available are, " + Environment.NewLine + "!rt USERNAME *AUTHCODE* - to log in to be authenticated and accept the TOS (Auth Code is only required if you have not registered before)");
                 }
                 // Else show them every command available
                 else
                 {
-                    await message.Channel.SendMessageAsync("The commands available are, " + Environment.NewLine + "!sms - To enable or disable SMS for your device (You will have to register your phone if you have not yet)" + Environment.NewLine + "!notify - Type it in the channel you want to receive SMS notifications for" + Environment.NewLine + "!registerphone 1234567890 \"United States\" \"Verizon Wireless\" - Use this command to register your phone as a device to get texts on. (Number, Country, Carrier)" + Environment.NewLine + "(Admin Only) !newevent EVENT YEAR - Generates a new guardian event and channels for RTX" + Environment.NewLine + "(Admin Only) !deleteevent EVENT YEAR - Deletes a previous set of RTX channels and roles, not including each bar" + Environment.NewLine + "(Admin Only) !readroles - Updates everyones team roles based off the DB sheet" + Environment.NewLine + "(Team Lead Only) !squadlead USER EVENT YEAR - Makes a user a squad lead for that users team");
+                    if (SMSDisabled == false)
+                    {
+                        await message.Channel.SendMessageAsync("The commands available are, " + Environment.NewLine + "!sms - To enable or disable SMS for your device (You will have to register your phone if you have not yet)" + Environment.NewLine + "!notify - Type it in the channel you want to receive SMS notifications for" + Environment.NewLine + "!registerphone 1234567890 \"United States\" \"Verizon Wireless\" - Use this command to register your phone as a device to get texts on. (Number, Country, Carrier)" + Environment.NewLine + "(Admin Only) !newevent EVENT YEAR - Generates a new guardian event and channels for RTX" + Environment.NewLine + "(Admin Only) !deleteevent EVENT YEAR - Deletes a previous set of RTX channels and roles, not including each bar" + Environment.NewLine + "(Admin Only) !readroles - Updates everyones team roles based off the DB sheet" + Environment.NewLine + "(Team Lead Only) !squadlead USER EVENT YEAR - Makes a user a squad lead for that users team");
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync("The commands available are, " + Environment.NewLine + "(Admin Only) !newevent EVENT YEAR - Generates a new guardian event and channels for RTX" + Environment.NewLine + "(Admin Only) !deleteevent EVENT YEAR - Deletes a previous set of RTX channels and roles, not including each bar" + Environment.NewLine + "(Admin Only) !readroles - Updates everyones team roles based off the DB sheet" + Environment.NewLine + "(Team Lead Only) !squadlead USER EVENT YEAR - Makes a user a squad lead for that users team");
+                    }
                 }
                 return true;
             }

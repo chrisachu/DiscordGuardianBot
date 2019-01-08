@@ -149,7 +149,6 @@ namespace DiscordBotGuardian
             List<ReorderRoleProperties> reorder = new List<ReorderRoleProperties>();
             foreach (Discord.IRole existingrole in Context.Guild.Roles)
             {
-                System.Console.WriteLine(existingrole.Position + "-"+ existingrole.Name);
                 // Compare the list of roles in the discord with the Role
                 if (existingrole.Name.Contains("Guardian-") && existingrole.Name.Contains("Head-Guardian-") == false)
                 {
@@ -194,8 +193,8 @@ namespace DiscordBotGuardian
             await CreateChannel(Context, "admins", new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian", ChannelPermType = RolePermissions.ChannelPermissions("admin") } }, "Admin Chat", "Administration", 2);
             await CreateChannel(Context, "mods", new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Mod", ChannelPermType = RolePermissions.ChannelPermissions("mod") } }, "Mod Chat", "Administration", 3);
             await CreateChannel(Context, "report-request-to-admins", GuardianEventsStandard, "Report any issues or requests here.", "Administration", 4);
-            await CreateChannel(Context, "rulebook", new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Everyone", ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, "Announcements for everyone.", "Administration", 5);
-            await CreateChannel(Context, "landing", new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Everyone", ChannelPermType = RolePermissions.ChannelPermissions("nohistory") } }, "Limbo where new users wait for roles to be assigned.", "Administration", 6);
+            await CreateChannel(Context, "rulebook", new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "@everyone", ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, "Announcements for everyone.", "Administration", 5);
+            await CreateChannel(Context, "landing", new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "@everyone", ChannelPermType = RolePermissions.ChannelPermissions("nohistory") } }, "Limbo where new users wait for roles to be assigned.", "Administration", 6);
 
 
             // Global Category Channels

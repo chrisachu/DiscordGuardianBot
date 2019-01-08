@@ -34,7 +34,7 @@ namespace DiscordBotGuardian
             else
             {
                 // return inherit
-                return new OverwritePermissions(viewChannel: PermValue.Allow);
+                return new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow, readMessageHistory: PermValue.Allow, connect: PermValue.Allow, speak: PermValue.Allow);
             }
         }
         /// <summary>

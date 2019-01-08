@@ -24,7 +24,7 @@ namespace DiscordBotGuardian
             string curDir = Directory.GetCurrentDirectory();
             string credsfile = File.ReadAllText(curDir + "/botsettings.json");
             Credentials creds = JsonConvert.DeserializeObject<Credentials>(credsfile);
-            range = creds.SheetName + "!A:I";
+            range = creds.SheetName + "!A:J";
             sheetname = creds.SheetName;
             spreadsheetId = creds.SpreadSheetID;
         }
@@ -75,6 +75,7 @@ namespace DiscordBotGuardian
                     int discordusername = 0;
                     int roles = 0;
                     int sms = 0;
+                    int authcode = 0;
                     int channels = 0;
                     int eventname = 0;
                     foreach (var row in values)
@@ -118,6 +119,10 @@ namespace DiscordBotGuardian
                                 if (row[eventname].ToString() != "NULL")
                                 {
                                     users[userrow].Event = row[eventname].ToString().Split(',').ToList();
+                                }
+                                if (row[authcode].ToString() != "NULL")
+                                {
+                                    users[userrow].AuthCode = row[authcode].ToString();
                                 }
                             }
                             else
@@ -163,6 +168,10 @@ namespace DiscordBotGuardian
                                 {
                                     newuser[newuserrow].Event = row[eventname].ToString().Split(',').ToList();
                                 }
+                                if (row[authcode].ToString() != "NULL")
+                                {
+                                    newuser[newuserrow].AuthCode = row[authcode].ToString();
+                                }
                                 newuserrow++;
                             }
                             userrow++;
@@ -207,6 +216,10 @@ namespace DiscordBotGuardian
                                 else if (headerrow.ToString().ToLower().Trim() == "event")
                                 {
                                     eventname = counter;
+                                }
+                                else if (headerrow.ToString().ToLower().Trim() == "authcode")
+                                {
+                                    authcode = counter;
                                 }
                                 counter++;
                             }                            
@@ -275,6 +288,10 @@ namespace DiscordBotGuardian
                                 {
                                     person.Team = list;
                                 }
+                                else if (type == "AuthCode")
+                                {
+                                    person.AuthCode = value;
+                                }
                                 updated = true;
                                 userinfo = person;
                                 break;
@@ -309,6 +326,7 @@ namespace DiscordBotGuardian
                 int smsc = 0;
                 int channelsc = 0;
                 int eventnamec = 0;
+                int authcodec = 0;
 
                 int rownumber = 1;
  
@@ -353,6 +371,10 @@ namespace DiscordBotGuardian
                             else if (headerrow.ToString().ToLower().Trim() == "event")
                             {
                                 eventnamec = counter;
+                            }
+                            else if (headerrow.ToString().ToLower().Trim() == "authcode")
+                            {
+                                authcodec = counter;
                             }
                             counter++;
                         }
@@ -421,7 +443,15 @@ namespace DiscordBotGuardian
                 {
                     events = string.Join(",", user.Event);
                 }
-
+                string authcode;
+                if (user.AuthCode == null)
+                {
+                    authcode = "NULL";
+                }
+                else
+                {
+                    authcode = user.AuthCode;
+                }
                 Dictionary<int, string> array = new Dictionary<int, string>
                 {
                     [rtusernamec] = user.RTUsername,
@@ -432,9 +462,10 @@ namespace DiscordBotGuardian
                     [rolesc] = roles,
                     [smsc] = user.SMS.ToString(),
                     [channelsc] = channels,
-                    [eventnamec] = events
+                    [eventnamec] = events,
+                    [authcodec] = authcode
                 };
-                var oblist = new List<object>() { array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8] };
+                var oblist = new List<object>() { array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9] };
                 requestBody.Values = new List<IList<object>> { oblist };
                 UpdateValuesResponse response2 = request2.Execute();
 
