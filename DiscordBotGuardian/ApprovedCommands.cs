@@ -236,6 +236,7 @@ namespace DiscordBotGuardian
                         {
                             // Send a message saying we sre starting
                             await message.Channel.SendMessageAsync(message.Author.Mention + " New event is either generating or has been generated. Please give it a few minutes (5+) to complete.");
+                            await message.Channel.SendMessageAsync("https://i.imgur.com/Gyn3f3T.gifv");
 
                             // Parse the message so we can send the correct values
                             var parsedmessage = message.Content.Split('"').Select((element, index) => index % 2 == 0 ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) : new string[] { element }).SelectMany(element => element).ToList();
@@ -269,9 +270,9 @@ namespace DiscordBotGuardian
                     if (Validation.IsHGorAdminAsync(context, message).Result)
                     {
                         // Read the DB and update the user list
-                        users = Database.ReadDB(users);
-
-                        foreach(var user in users)
+                        users = Database.ReadDB(users, true);
+                        await message.Channel.SendMessageAsync(message.Author.Mention + " This will take a few minutes depending on how many people are registered");
+                        foreach (var user in users)
                         {
                             if(user.Team != null)
                             {
@@ -292,10 +293,29 @@ namespace DiscordBotGuardian
                                     // Update the users DB to contain the new role
                                     users = Database.UpdateUser(user.DiscordUsername, "Roles", "", users, roles);
                                     users = Database.UpdateUser(user.DiscordUsername, "Team", "", users, null);
+                                    await Task.Delay(1000);
                                 }
                             }
                         }
 
+                        // Notify the user the DB reload has completed
+                        await message.Channel.SendMessageAsync(message.Author.Mention + " The Roles List has been reloaded");
+                    }
+                    else
+                    {
+                        // Warn the user they dont have perms
+                        await message.Channel.SendMessageAsync(message.Author.Mention + " You need to be a head guardian or admin to run this command.");
+                    }
+                    return true;
+                }
+                // If the command is to read the DB roles
+                else if (splitmessage[0].ToLower() == "!reload")
+                {
+                    // Check if the user requesting is an admin or head guardian
+                    if (Validation.IsHGorAdminAsync(context, message).Result)
+                    {
+                        // Read the DB and update the user list
+                        users = Database.ReadDB(users, true);
                         // Notify the user the DB reload has completed
                         await message.Channel.SendMessageAsync(message.Author.Mention + " The DB has been reloaded");
                     }
@@ -316,6 +336,7 @@ namespace DiscordBotGuardian
                         {
                             // Send a message saying we sre starting
                             await message.Channel.SendMessageAsync(message.Author.Mention + " Previous event is being deleted.");
+                            await message.Channel.SendMessageAsync("https://i.imgur.com/Gyn3f3T.gifv");
 
                             // Parse the message so we can send the correct values
                             var parsedmessage = message.Content.Split('"').Select((element, index) => index % 2 == 0 ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) : new string[] { element }).SelectMany(element => element).ToList();

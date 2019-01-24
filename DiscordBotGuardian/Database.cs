@@ -32,7 +32,6 @@ namespace DiscordBotGuardian
         {
             LoadCreds();
             UserCredential credential;
-            string[] Scopes = { SheetsService.Scope.Spreadsheets };
             string ApplicationName = "GuardianBot-Discord";
             using (var stream =
                 new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
@@ -40,10 +39,11 @@ namespace DiscordBotGuardian
                 string credPath = "token.json";
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
-                    Scopes,
+                    new [] { SheetsService.Scope.Spreadsheets },
                     "user",
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
+
             }
 
             // Create Google Sheets API service.
@@ -54,7 +54,7 @@ namespace DiscordBotGuardian
             });
             return service;
         }
-        public static List<UserData> ReadDB(List<UserData> users)
+        public static List<UserData> ReadDB(List<UserData> users, [Optional]bool dump)
         {
             lock (users)
             {
@@ -82,7 +82,7 @@ namespace DiscordBotGuardian
                     {
                         if (headers == true)
                         {
-                            if (users.ElementAtOrDefault(userrow) != null)
+                            if (users.ElementAtOrDefault(userrow) != null && dump == false)
                             {
                                 if (row[rtusername].ToString() != "NULL")
                                 {
@@ -229,6 +229,10 @@ namespace DiscordBotGuardian
                 }
                 if (newuser.Count > 0)
                 {
+                    if(dump == true)
+                    {
+                        users.Clear();
+                    }
                     foreach (UserData user in newuser)
                     {
                         users.Add(user);

@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DiscordBotGuardian
 {
@@ -82,13 +83,6 @@ namespace DiscordBotGuardian
                         // Find that the user has not been authenticated yet
                         if (user.RTUsername.ToLower().Trim() == message.Content.Split()[1].ToLower().Trim() && found == true)
                         {
-                            // Update the user info in the Sheets DB
-                            if (updateonly == false)
-                            {
-                                users = Database.UpdateUser(message.Content.Split()[1].ToLower(), "DiscordUsername", message.Author.Id.ToString().ToLower(), users);
-                                users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "Authenticated", "TRUE", users);
-                                users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "AuthCode", "NULL", users);
-                            }
                             // Generate list of roles based off what the user has in the DB
                             List<string> roles = new List<string>();
                             if (user.Roles != null)
@@ -141,6 +135,7 @@ namespace DiscordBotGuardian
                                             });
                                         }
                                         catch { }
+                                        await Task.Delay(1000);
                                         // Remove the event from the Users info and only store it in the roles param
                                         users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "Event", "", users, null);
                                     }
@@ -154,6 +149,16 @@ namespace DiscordBotGuardian
                     {
                         await SentDiscordCommands.DeleteLastMessage(context, "landing");
                         await message.Channel.SendMessageAsync(message.Author.Mention + " Your Discord user has now been authenticated as a Guardian and accepted the TOS");
+                        // Update the user info in the Sheets DB
+                        if (updateonly == false)
+                        {
+                            await Task.Delay(5000);
+                            users = Database.UpdateUser(message.Content.Split()[1].ToLower(), "DiscordUsername", message.Author.Id.ToString().ToLower(), users);
+                            await Task.Delay(1000);
+                            users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "Authenticated", "TRUE", users);
+                            await Task.Delay(1000);
+                            users = Database.UpdateUser(message.Author.Id.ToString().ToLower(), "AuthCode", "NULL", users);
+                        }
                     }
                     // Kick back and error if they didn't auth correctly
                     else
