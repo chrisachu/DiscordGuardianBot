@@ -365,7 +365,7 @@ And now for The Rules:
 4.  Do not share this Discord with non-Guardians. This is our private fun place.
 5.  Some Teams have Squad chats. Please use your assigned squad chat only. Do not go into other squad chats.
 
-Once you understand these rules, go back to #landing and type '!rt RT-Site-Username' to be given access to all of the fun. Thank you for being an important part of the RTX experience!");
+Once you understand these rules, go back to #landing and type '!rt RT-Site-Username AUTHCODE' to be given access to all of the fun. Thank you for being an important part of the RTX experience!");
                 }
             }
             return;
