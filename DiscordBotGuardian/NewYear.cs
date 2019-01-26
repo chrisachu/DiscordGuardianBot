@@ -345,27 +345,22 @@ namespace DiscordBotGuardian
                     await message.SendMessageAsync(@"Welcome to the official Guardian Discord! Here, you will find the means to communicate with your fellow Guardians. 
 Please note the structure of this Discord as channels may have changed from previous years. 
 
-Administration is where everyone starts. Here, we have our rulebook that everyone must follow and acknowledge to be a part of this super Discord. 
-
+Administration is where everyone starts. Here, we have our rulebook that everyone must follow and acknowledge. 
 Global is where you can fly across the pond and chat with Guardians from other events (RTX London, RTX Austin, etc.). Most of the social channels live here as well. 
-
 Event Location hosts the channels specific to each RTX event. Each event will have its own version of the following:
-
 Command-Center: Announcements and links for your RTX Event.
-
 Commons: Your RTX Event’s shared channels.
-
 Team Channels: Each team has their own set of channels that are specific to each team’s needs.
 
 You’ll find voice channels in Global, Commons, and your Team category.
 And now for The Rules:
 1. The Rooster Teeth Code of Conduct applies before, during, and after RTX- in both real life and online. If you have not read it, please do so right now. It is the standard by which this community holds its members; it is how we expect Guardians to comport themselves. https://docs.google.com/document/d/e/2PACX-1vQbrMCVptCC5-c_LbdheGUitvSvXsKo1W0EFkCSvfoue7qlW_Xdm2Po1QpXRm4kO_Z85eL00PePgOyW/pub
-2.  Follow all normal Guardian rules. Seriously. If you need a refresher on what Guardian rules are, here is the short version - BE NICE - Post like you would on RT.
-3.  When in voice chat, please use push-to-talk.
-4.  Do not share this Discord with non-Guardians. This is our private fun place.
-5.  Some Teams have Squad chats. Please use your assigned squad chat only. Do not go into other squad chats.
+2. Follow all normal Guardian rules. Seriously. If you need a refresher on what Guardian rules are, here is the short version - BE NICE - Post like you would on RT.
+3. When in voice chat, please use push-to-talk.
+4. Do not share this Discord with non-Guardians. This is our private fun place.
+5. Some Teams have Squad chats. Please use your assigned squad chat only. Do not go into other squad chats.
 
-Once you understand these rules, go back to #landing and type '!rt RT-Site-Username AUTHCODE' to be given access to all of the fun. Thank you for being an important part of the RTX experience!");
+Once you understand these rules, go back to #landing and type '!rt RT-Site-Username AUTHCODE' (This code will be sent in an email including the link to the Discord (The accepting your role email is different)). Thank you for being an important part of the RTX experience!");
                 }
             }
             return;

@@ -164,7 +164,7 @@ namespace DiscordBotGuardian
                     else
                     {
                         await SentDiscordCommands.DeleteLastMessage(context, "landing");
-                        await message.Channel.SendMessageAsync(message.Author.Mention + " Your RT Username is already authenticated as another user or you are not registered as a Guardian. Your auth code may also be incorrect. Contact a HG or an Admin if you think this is incorrect.");
+                        await message.Channel.SendMessageAsync(message.Author.Mention + " Your RT Username is already authenticated as another user or you are not registered as a Guardian. Your auth code may also be incorrect (Or you may have not been sent one yet, please wait for an email). Contact a HG or an Admin if you think this is incorrect.");
                     }
                     return true;
                 }
