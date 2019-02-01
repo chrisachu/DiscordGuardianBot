@@ -219,10 +219,11 @@ namespace DiscordBotGuardian
             await CreateChannel(Context, "guardian-bar-" + Event + "-" + Year, null, "There will always be a Guardian Bar", Event + "-Commons-" + Year, 1);
             await CreateChannel(Context, "ride-room-share-" + Event + "-" + Year, null, "Because no one uses the forum anymore.", Event + "-Commons-" + Year, 2);
             await CreateChannel(Context, "meetups-events-" + Event + "-" + Year, null, "It's like matchmaking, but in real life.", Event + "-Commons-" + Year, 3);
-            await CreateChannel(Context, "town-hall-" + Event + "-" + Year, null, "Ask the HGs anything appropriate.", Event + "-Commons-" + Year, 4);
-            await CreateVoiceChannel(Context, Event + "-" + Year + "-vc-1", null, Event + "-Commons-" + Year, 5);
-            await CreateVoiceChannel(Context, Event + "-" + Year + "-vc-2", null, Event + "-Commons-" + Year, 6);
-            await CreateVoiceChannel(Context, "town-hall-vc-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, Event + "-Commons-" + Year, 7);
+            await CreateChannel(Context, "fit4rtx-" + Event + "-" + Year, null, "It's like matchmaking, but in real life.", Event + "-Commons-" + Year, 4);
+            await CreateChannel(Context, "town-hall-" + Event + "-" + Year, null, "Ask the HGs anything appropriate.", Event + "-Commons-" + Year, 5);
+            await CreateVoiceChannel(Context, Event + "-" + Year + "-vc-1", null, Event + "-Commons-" + Year, 6);
+            await CreateVoiceChannel(Context, Event + "-" + Year + "-vc-2", null, Event + "-Commons-" + Year, 7);
+            await CreateVoiceChannel(Context, "town-hall-vc-" + Event + "-" + Year, new List<RolePermissions> { new RolePermissions { Role = "Admin", ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Head-Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("admin") }, new RolePermissions { Role = "Guardian-" + Event + "-" + Year, ChannelPermType = RolePermissions.ChannelPermissions("readonly") } }, Event + "-Commons-" + Year, 8);
 
             // Team Chats
             // Center-Stage
