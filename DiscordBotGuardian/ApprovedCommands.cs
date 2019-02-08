@@ -243,12 +243,12 @@ namespace DiscordBotGuardian
 
                             // Set up the task to run it
                             NewYear newyeartask = new NewYear();
-                                await newyeartask.GenerateRolesAsync(context, parsedmessage[1], Convert.ToInt32(parsedmessage[2]));
-                           
-                                await newyeartask.GenerateCategoriesAsync(context, parsedmessage[1], Convert.ToInt32(parsedmessage[2]));
+                            await newyeartask.GenerateRolesAsync(context, parsedmessage[1], Convert.ToInt32(parsedmessage[2]));
 
-                                await newyeartask.GenerateChannelsAsync(context, parsedmessage[1], Convert.ToInt32(parsedmessage[2]));
- 
+                            await newyeartask.GenerateCategoriesAsync(context, parsedmessage[1], Convert.ToInt32(parsedmessage[2]));
+
+                            await newyeartask.GenerateChannelsAsync(context, parsedmessage[1], Convert.ToInt32(parsedmessage[2]));
+
                         }
                         else
                         {
@@ -274,9 +274,9 @@ namespace DiscordBotGuardian
                         await message.Channel.SendMessageAsync(message.Author.Mention + " This will take a few minutes depending on how many people are registered");
                         foreach (var user in users)
                         {
-                            if(user.Team != null)
+                            if (user.Team != null)
                             {
-                                if(user.Team.Count > 0)
+                                if (user.Team.Count > 0)
                                 {
                                     List<string> roles = new List<string>();
                                     foreach (var team in user.Team)
@@ -286,7 +286,7 @@ namespace DiscordBotGuardian
                                         await SentDiscordCommands.RoleTask(context, team);
 
                                     }
-                                    foreach(var role in user.Roles)
+                                    foreach (var role in user.Roles)
                                     {
                                         roles.Add(role);
                                     }
@@ -326,6 +326,10 @@ namespace DiscordBotGuardian
                     }
                     return true;
                 }
+                else if (splitmessage[0].ToLower() == "!excuse")
+                {
+                    await message.Channel.SendMessageAsync(message.Author.Mention + " " + Excuses.RandomExcuse());
+                }
                 else if (splitmessage[0].ToLower() == "!deleteevent")
                 {
                     // Check if the user is an admin or head guardian
@@ -342,7 +346,7 @@ namespace DiscordBotGuardian
                             var parsedmessage = message.Content.Split('"').Select((element, index) => index % 2 == 0 ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) : new string[] { element }).SelectMany(element => element).ToList();
 
                             // Dump Channels NOT Guardian Bar
-                            foreach(Discord.IGuildChannel channel in await context.Guild.GetChannelsAsync())
+                            foreach (Discord.IGuildChannel channel in await context.Guild.GetChannelsAsync())
                             {
                                 if (channel.Name.ToLower().Trim().Contains(parsedmessage[1].ToLower().Trim() + "-" + parsedmessage[2].ToLower().Trim()))
                                 {
