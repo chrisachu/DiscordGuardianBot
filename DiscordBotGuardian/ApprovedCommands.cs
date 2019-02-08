@@ -328,7 +328,20 @@ namespace DiscordBotGuardian
                 }
                 else if (splitmessage[0].ToLower() == "!excuse")
                 {
-                    await message.Channel.SendMessageAsync(message.Author.Mention + " " + Excuses.RandomExcuse());
+                    await message.Channel.SendMessageAsync(message.Author.Mention + " " + Fun.RandomExcuse());
+                }
+                else if (splitmessage[0].ToLower() == "!roll" && splitmessage.Count == 2)
+                {
+                    var isNumeric = int.TryParse(splitmessage[1], out int n);
+                    if (isNumeric == true)
+                    {
+                        await message.Channel.SendMessageAsync(message.Author.Mention + " You rolled a " + Fun.Roll(Int32.Parse(splitmessage[1])));
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync(message.Author.Mention + " Thats not a number");
+
+                    }
                 }
                 else if (splitmessage[0].ToLower() == "!deleteevent")
                 {

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DiscordBotGuardian
 {
     /// <summary>
     /// This class will be used for selecting Angela Lansbury gifs without poluting the main code
     /// </summary>
-    class Excuses
+    class Fun
     {
         /// <summary>
         /// Used for randomly picking a gif from a list to return as a string
@@ -485,6 +486,11 @@ namespace DiscordBotGuardian
             // Return a random gif
             return Messages.PickRandom();
 
+        }
+        public static int Roll(int number)
+        {
+            Random rnd = new Random();
+            return rnd.Next(1, number);
         }
     }
 }
